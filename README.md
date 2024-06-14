@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Local Finance
 
-## Getting Started
+## TODO
+g
+- connect to git
+- commits
 
-First, run the development server:
+- actual file stuff
+  - create repo for app
+  - new transaction -> new file
+  - edit transaction -> edit file
+  - delete transaction -> delete file
+  - write timing
+  - add new fields
+  - selected logic
+  - net worth
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- details -> form
+  - add new transaction
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- other pages - combine a few pages where logical
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  - IOUs + Expected
+  - Goal tracking
+  - footer pages -> just text etc - not docs or anything
+  - add a contact thing for recs or whatever
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Styling
+  
+  - none selected placeholder
+  - responsive (hamburger menu)
+  - style all shadcn ui
+  - better name
+  - meta data
+  - add lines between columns??
+  - style table better
+  - color scheme - dark mode similar to obsidian / lax talk (lighter dark mode)
+  - logo
+  - check out other fonts
+  - muted text color for nav + footer + placeholders + etc
 
-## Learn More
+- misc (skip depending on time)
 
-To learn more about Next.js, take a look at the following resources:
+  - ai integration - categories etc
+  - export + import data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Publish
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+  - build
+  - create home page
+  - make downloadable
+  - add to portfolio + yats
+  - Blog post
 
-## Deploy on Vercel
+## System design stuff
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Make a system design document for the app + my other similar designs
