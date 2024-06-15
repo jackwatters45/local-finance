@@ -26,6 +26,9 @@ export default function Footer() {
 					<a className="hover:underline hover:opacity-90" href="/editor">
 						Editor
 					</a>
+					<a className="hover:underline hover:opacity-90" href="/index">
+						Index
+					</a>
 				</div>
 				<div className="flex items-center gap-4">
 					<div>{new Date().getFullYear()}</div>

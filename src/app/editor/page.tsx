@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 
-import { open } from "@tauri-apps/api/dialog";
+import { open } from "@tauri-apps/plugin-dialog";
 
-import { readTextFile, writeTextFile, BaseDirectory } from "@tauri-apps/api/fs";
+import { readTextFile, writeTextFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import { Button } from "@/components/ui/button";
 
 export default function Editor() {

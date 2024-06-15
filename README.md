@@ -1,9 +1,6 @@
 # Local Finance
 
 ## TODO
-g
-- connect to git
-- commits
 
 - actual file stuff
   - create repo for app

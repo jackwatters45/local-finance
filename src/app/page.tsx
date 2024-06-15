@@ -3,6 +3,7 @@ import { columns } from "./transactions/columns";
 import type { Transaction } from "./transactions/columns";
 import TransactionDetails from "./transactions/transaction-details";
 import AddTransactionButton from "./transactions/add-transaction-button";
+import { Button } from "@/components/ui/button";
 
 export const transactions: Transaction[] = [
 	{
@@ -57,6 +58,8 @@ export default async function Home() {
 				<div className="flex items-center justify-between ">
 					<h2 className="text-xl font-semibold px-8">Transactions</h2>
 					<div className="pr-2">
+						<Button className="rounded-full">Create</Button>
+
 						<AddTransactionButton />
 					</div>
 				</div>
