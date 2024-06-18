@@ -5,7 +5,7 @@ import type { Path, UseFormReturn } from "react-hook-form";
 import type { z } from "zod";
 import { useDebouncedCallback } from "use-debounce";
 
-import type { formSchema } from "./details-form";
+import { getDefaultTransaction, type formSchema } from "./details-form";
 import { writeDataFile } from "@/lib/tauri";
 import { cn, toTitleCase } from "@/lib/utils";
 
@@ -49,8 +49,23 @@ function TransactionDetailInput({
 }: TransactionDetailInputProps) {
 	const setTransactions = useSetAtom(transactionsAtom);
 
-	const handleInputChange = (data: string) => {
+	const handleInputChange = useDebouncedCallback((e: string) => {
+		const data = props.type === "number" ? Number(e) : e;
+
 		const id = form.watch("id");
+		const isNew = form.watch("isNew");
+
+		if (isNew) {
+			form.setValue("isNew", false);
+
+			const newTransaction = getDefaultTransaction({ id, [name]: data });
+
+			writeDataFile(`${id}.json`, newTransaction);
+
+			return setTransactions((transactions) => {
+				return [...transactions, newTransaction];
+			});
+		}
 
 		setTransactions((transactions) => {
 			return transactions.map((transaction) => {
@@ -58,11 +73,11 @@ function TransactionDetailInput({
 
 				const newData = { ...transaction, [name]: data };
 
-				writeDataFile(`${id}.json`, JSON.stringify(newData));
+				writeDataFile(`${id}.json`, newData);
 				return newData;
 			});
 		});
-	};
+	}, 300);
 
 	return (
 		<FormField
@@ -106,6 +121,19 @@ function TransactionDetailDateInput({
 
 	const handleSelect = (data: Date | undefined) => {
 		const id = form.watch("id");
+		const isNew = form.watch("isNew");
+
+		if (isNew) {
+			form.setValue("isNew", false);
+
+			const newTransaction = getDefaultTransaction({ id, [name]: data });
+
+			writeDataFile(`${id}.json`, newTransaction);
+
+			return setTransactions((transactions) => {
+				return [...transactions, newTransaction];
+			});
+		}
 
 		setTransactions((transactions) => {
 			return transactions.map((transaction) => {
@@ -113,7 +141,7 @@ function TransactionDetailDateInput({
 
 				const newData = { ...transaction, [name]: data };
 
-				writeDataFile(`${id}.json`, JSON.stringify(newData));
+				writeDataFile(`${id}.json`, newData);
 				return newData;
 			});
 		});
@@ -150,9 +178,6 @@ function TransactionDetailDateInput({
 										field.onChange(e);
 										handleSelect(e);
 									}}
-									// disabled={(date) =>
-									// 	date > new Date() || date < new Date("1900-01-01")
-									// }
 									initialFocus
 								/>
 							</PopoverContent>
@@ -170,7 +195,7 @@ function TransactionDetailNotesInput({
 }: TransactionDetailBaseProps) {
 	const setTransactions = useSetAtom(transactionsAtom);
 
-	const handleInputChange = (data: string) => {
+	const handleInputChange = useDebouncedCallback((data: string) => {
 		const id = form.watch("id");
 
 		setTransactions((transactions) => {
@@ -179,11 +204,11 @@ function TransactionDetailNotesInput({
 
 				const newData = { ...transaction, [name]: data };
 
-				writeDataFile(`${id}.json`, JSON.stringify(newData));
+				writeDataFile(`${id}.json`, newData);
 				return newData;
 			});
 		});
-	};
+	}, 300);
 
 	return (
 		<FormField

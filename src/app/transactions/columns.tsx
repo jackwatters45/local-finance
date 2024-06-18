@@ -132,7 +132,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 function OpenMenu({ id }: { id: string }) {
-	const setSelectedTransactionId = useSetAtom(selectedTransactionIdAtom);
+	const setTransactionId = useSetAtom(selectedTransactionIdAtom);
 
 	return (
 		<>
@@ -140,7 +140,7 @@ function OpenMenu({ id }: { id: string }) {
 				<Button
 					variant="ghost"
 					className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 hidden lg:flex"
-					onClick={() => setSelectedTransactionId(id)}
+					onClick={() => setTransactionId(id)}
 				>
 					<span className="sr-only">Open menu</span>
 					<MoreVertical className="h-4 w-4" />
@@ -151,7 +151,7 @@ function OpenMenu({ id }: { id: string }) {
 						<Button
 							variant="ghost"
 							className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 lg:hidden"
-							onClick={() => setSelectedTransactionId(id)}
+							onClick={() => setTransactionId(id)}
 						>
 							<span className="sr-only">Open menu</span>
 							<MoreVertical className="h-4 w-4" />

@@ -16,12 +16,12 @@ export default function TransactionDetails() {
 		});
 	}, [transactionId]);
 
-	useEffect(() => {
-		console.log("transactionId", transactionId);
-	}, [transactionId]);
-	useEffect(() => {
-		console.log("transaction", transaction);
-	}, [transaction]);
+	// useEffect(() => {
+	// 	console.log("transactionId", transactionId);
+	// }, [transactionId]);
+	// useEffect(() => {
+	// 	console.log("transaction", transaction);
+	// }, [transaction]);
 
 	if (!transaction && transactionId) return null;
 

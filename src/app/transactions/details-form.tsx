@@ -25,12 +25,14 @@ import {
 	FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
 	TransactionDetailDateInput,
 	TransactionDetailInput,
 	TransactionDetailNotesInput,
 } from "./details-inputs";
+import { useSetAtom } from "jotai";
+import { transactionsAtom } from "../providers";
+import { deleteDataFile } from "@/lib/tauri";
 
 export const formSchema = z.object({
 	id: z.string(),
@@ -38,23 +40,35 @@ export const formSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.string(),
+	amount: z.number(),
 	category: z.string(),
 	tags: z.array(z.string()),
 	recurring: z.boolean(),
 	notes: z.string(),
+	isNew: z.boolean().optional(),
 });
 
-const getDefaultValues = (transaction: Transaction | null) => ({
-	id: transaction?.id ?? nanoid(),
-	name: transaction?.name ?? "",
-	date: transaction?.date ? new Date(transaction.date) : new Date(),
-	amount: String(transaction?.amount) ?? "",
-	category: transaction?.category ?? "",
-	tags: transaction?.tags ?? [],
-	recurring: transaction?.recurring ?? false,
-	notes: transaction?.notes ?? "",
-});
+export const getDefaultTransaction = (
+	transaction: Partial<Transaction> | null,
+) => {
+	const base = {
+		id: transaction?.id ?? nanoid(),
+		name: transaction?.name ?? "",
+		date: transaction?.date ? new Date(transaction.date) : new Date(),
+		amount: transaction?.amount ?? 0,
+		category: transaction?.category ?? "",
+		tags: transaction?.tags ?? [],
+		recurring: transaction?.recurring ?? false,
+		notes: transaction?.notes ?? "",
+	};
+
+	return !transaction?.id
+		? {
+				...base,
+				isNew: true,
+			}
+		: base;
+};
 
 // TODO add some focused bg for inputs
 // TODO select + multi select (tags + categories)
@@ -63,12 +77,23 @@ export default function TransactionForm({
 }: { transaction: Transaction | null }) {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
-		defaultValues: getDefaultValues(transaction),
+		defaultValues: getDefaultTransaction(transaction),
 	});
 
 	React.useEffect(() => {
-		form.reset(getDefaultValues(transaction));
+		form.reset(getDefaultTransaction(transaction));
 	}, [transaction, form]);
+
+	const setTransactions = useSetAtom(transactionsAtom);
+	const handleDelete = () => {
+		const id = form.watch("id");
+
+		deleteDataFile(id);
+
+		setTransactions((transactions) => {
+			return transactions.filter((transaction) => transaction.id !== id);
+		});
+	};
 
 	return (
 		<Form {...form}>
@@ -90,7 +115,7 @@ export default function TransactionForm({
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
-									<DropdownMenuItem>Delete</DropdownMenuItem>
+									<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</div>
@@ -138,13 +163,13 @@ export default function TransactionForm({
 								</FormItem>
 							)}
 						/>
-						<Button
+						{/* <Button
 							variant={"ghost"}
 							type="button"
 							className="text-muted-foreground -translate-x-4"
 						>
 							<span>Add field</span>
-						</Button>
+						</Button> */}
 					</div>
 					<Separator />
 					<TransactionDetailNotesInput form={form} name="notes" />

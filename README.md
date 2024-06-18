@@ -2,35 +2,26 @@
 
 ## TODO
 
-- add new -> needs to write to and display
-- implement add field
-- implement delete field
-- super json??
+commits
 
-- figure out a better data structure
-  - impossible to have a smooth app working this way
-- should index just be a redirect / onboarding page? onboarding logic.
+- implement delete
+- others..
 
-- implementactual file stuff
-  - create repo for app
-  - new transaction -> new file
-  - edit transaction -> edit file
-  - delete transaction -> delete file
-  - write timing
-  
-  - add new fields
-  - selected logic
-  - net worth
+- scrolling
 
-- details -> form
-  - add new transaction
+- figure out a better data structure?
+
+- virtualized list
 
 - other pages - combine a few pages where logical
 
+  - net worth
   - IOUs + Expected
   - Goal tracking
   - footer pages -> just text etc - not docs or anything
   - add a contact thing for recs or whatever
+
+- should index just be a redirect / onboarding page? onboarding logic.
 
 - Styling
   
@@ -51,6 +42,7 @@
 
   - ai integration - categories etc
   - export + import data
+  - implement add/delete fields
 
 - Publish
 
