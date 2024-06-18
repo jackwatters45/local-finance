@@ -2,12 +2,27 @@
 
 ## TODO
 
-- actual file stuff
+TODO figure out a better data structure
+
+- actually writing to file
+  - edit
+  - add new -> needs to write to and display
+
+  - implement add field
+  - implement delete field
+  - super json??
+
+  - concurency between details and table 
+
+- should index just be a redirect / onboarding page? onboarding logic.
+
+- implementactual file stuff
   - create repo for app
   - new transaction -> new file
   - edit transaction -> edit file
   - delete transaction -> delete file
   - write timing
+  
   - add new fields
   - selected logic
   - net worth
@@ -24,7 +39,7 @@
 
 - Styling
   
-  - none selected placeholder
+  - details page
   - responsive (hamburger menu)
   - style all shadcn ui
   - better name
