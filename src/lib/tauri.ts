@@ -8,6 +8,7 @@ import {
 	removeFile,
 	writeTextFile,
 } from "@tauri-apps/api/fs";
+import superjson from "superjson";
 
 export const createBaseDirectory = async () => {
 	await createDir(APP_DIRECTORY, {
@@ -24,19 +25,20 @@ export const createBaseDirectory = async () => {
 
 	await writeTextFile(
 		`${APP_DIRECTORY}/.settings.json`,
-		JSON.stringify({ theme: "system", baseDirectory, APP_DIRECTORY }),
+		superjson.stringify({ theme: "system", baseDirectory, APP_DIRECTORY }),
 		{
 			dir: BaseDirectory.AppConfig,
 		},
 	);
 };
 
-export async function writeDataFile(
+export async function writeDataFile<T>(
 	fileName: string,
-	content: string,
+	content: T,
 ): Promise<void> {
 	try {
-		await writeTextFile(`${APP_DIRECTORY}/${fileName}`, content, {
+		const stringified = superjson.stringify(content);
+		await writeTextFile(`${APP_DIRECTORY}/${fileName}`, stringified, {
 			dir: BaseDirectory.AppData,
 		});
 		console.log(`Data written to ${fileName}`);
@@ -52,7 +54,7 @@ export async function readTransactionData(
 		const content = await readTextFile(`${APP_DIRECTORY}/${fileName}`, {
 			dir: BaseDirectory.AppData,
 		});
-		return JSON.parse(content);
+		return superjson.parse<Transaction>(content);
 	} catch (error) {
 		console.error(`Error reading file ${fileName}:`, error);
 		return null;
@@ -73,7 +75,7 @@ export async function readAllTransactions() {
 
 			if (data) files.push(data);
 		}
-		
+
 		return files;
 	} catch (error) {
 		console.error("Error reading files:", error);
