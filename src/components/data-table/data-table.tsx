@@ -22,16 +22,17 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import DataTableFilter from "./data-table-filter";
+import { cn } from "@/lib/utils";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id: string }, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
 		getSortedRowModel: getSortedRowModel(),
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
+		getRowId: (row) => row.id,
 		state: {
 			sorting,
 			columnFilters,
@@ -60,15 +62,15 @@ export function DataTable<TData, TValue>({
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
+							{headerGroup.headers.map((header, i) => {
 								return (
-									<TableHead key={header.id} className="pl-8">
+									<TableHead
+										key={header.id}
+										className={cn("", i === 0 ? "pl-8" : "pl-3")}
+									>
 										{header.isPlaceholder
 											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
+											: flexRender(header.column.columnDef.header, header.getContext())}
 									</TableHead>
 								);
 							})}
@@ -83,8 +85,8 @@ export function DataTable<TData, TValue>({
 								data-state={row.getIsSelected() && "selected"}
 								className="group"
 							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id} className="pl-8">
+								{row.getVisibleCells().map((cell, i) => (
+									<TableCell key={cell.id} className={cn("", i === 0 ? "pl-4" : "pl-0")}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
