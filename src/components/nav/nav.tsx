@@ -33,7 +33,7 @@ const navItems: Array<NavItemProps> = [
 
 export default function Nav() {
 	return (
-		<div className="w-full border-b border-border">
+		<div className="w-full border-b border-border bg-background fixed z-10">
 			<nav className="flex items-center justify-between w-full px-8 max-w-screen-2xl mx-auto">
 				<h1 className="text-lg font-semibold">{APP_NAME_PRETTY}</h1>
 				<div>
