@@ -1,56 +1,32 @@
-import { DataTable } from "../components/data-table/data-table";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAtom, useSetAtom } from "jotai";
 import { columns } from "./transactions/columns";
-import type { Transaction } from "./transactions/columns";
-import TransactionDetails from "./transactions/transaction-details";
-import AddTransactionButton from "./transactions/add-transaction-button";
+
+import { Plus } from "lucide-react";
+import { readAllTransactions } from "@/lib/tauri";
+import { selectedTransactionIdAtom, transactionsAtom } from "./providers";
+
+import { LoadingPage } from "@/components/ui/loading";
+import { DataTable } from "../components/data-table/data-table";
 import { Button } from "@/components/ui/button";
+import TransactionDetails from "./transactions/details";
 
-export const transactions: Transaction[] = [
-	{
-		id: "728ed52f",
-		date: new Date("2023-01-01"),
-		name: "Example Payment",
-		amount: 100,
-		category: "Food",
-		tags: ["lunch", "dinner"],
-		recurring: false,
-		notes:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-		history: "",
-	},
-	{
-		id: "ae0a9ee2",
-		date: new Date("2023-01-02"),
-		name: "Example Payment",
-		amount: 200,
-		category: "Food",
-		tags: ["dinner", "dinner"],
-		recurring: false,
-		notes:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-		history: "",
-	},
-	{
-		id: "ee0a9ee2",
-		date: new Date("2023-01-03"),
-		name: "Example Payment",
-		amount: 300,
-		category: "Food",
-		tags: ["dinner", "dinner"],
-		recurring: false,
-		notes:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-		history: "",
-	},
-];
+export default function Home() {
+	const setTransactionId = useSetAtom(selectedTransactionIdAtom);
 
-async function getData(): Promise<Transaction[]> {
-	// Fetch data from your API here.
-	return transactions;
-}
+	const [isLoading, setIsLoading] = useState(true);
+	const [transactions, setTransactions] = useAtom(transactionsAtom);
 
-export default async function Home() {
-	const data = await getData();
+	useEffect(() => {
+		readAllTransactions().then((transactions) => {
+			setIsLoading(false);
+			setTransactions(transactions);
+		});
+	}, [setTransactions]);
+
+	if (isLoading) return <LoadingPage />;
 
 	return (
 		<>
@@ -58,13 +34,17 @@ export default async function Home() {
 				<div className="flex items-center justify-between ">
 					<h2 className="text-xl font-semibold px-8">Transactions</h2>
 					<div className="pr-2">
-						<Button className="rounded-full">Create</Button>
-
-						<AddTransactionButton />
+						<Button
+							variant={"ghost"}
+							size={"icon"}
+							className="rounded-full p-0"
+							onClick={() => setTransactionId(null)}
+						>
+							<Plus className="h-5 w-5 text-muted-foreground" />
+						</Button>
 					</div>
 				</div>
-				{/* TODO spacing of table */}
-				<DataTable columns={columns} data={data} />
+				<DataTable columns={columns} data={transactions} />
 			</div>
 			<div className="hidden lg:block border-l border-border">
 				<TransactionDetails />
