@@ -1,6 +1,15 @@
 "use client";
 
-import { MoreVertical, PanelRightOpen } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
+import { MoreVertical } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
+
+import { readTransactionData, writeDataFile } from "@/lib/tauri";
+import TransactionDetails from "./details";
+import { selectedTransactionIdAtom, transactionsAtom } from "../providers";
+import { cn } from "@/lib/utils";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { Button } from "@/components/ui/button";
@@ -10,34 +19,9 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { changeDate } from "./actions";
-import {
-	SheetDescription,
-	Sheet,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
-import TransactionDetails from "./transaction-details";
-import { useSetAtom } from "jotai";
-import { selectedTransactionIdAtom } from "../providers";
-
-export type Transaction = {
-	id: string;
-	date: Date;
-	name: string;
-	amount: number;
-	category: string; // TODO
-	tags: string[]; // TODO
-	recurring: boolean;
-	notes: string;
-	history: string; // TODO
-};
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import type { Transaction } from "@/types";
 
 export const columns: ColumnDef<Transaction>[] = [
 	{
@@ -56,7 +40,7 @@ export const columns: ColumnDef<Transaction>[] = [
 						<Button
 							variant={"ghost"}
 							className={cn(
-								"justify-start text-left font-normal p-0 w-full",
+								"justify-start text-left font-normal  w-full",
 								!date && "text-muted-foreground",
 							)}
 						>
@@ -69,7 +53,7 @@ export const columns: ColumnDef<Transaction>[] = [
 							selected={date}
 							onSelect={async (date) => {
 								if (!date) throw new Error("Date is undefined");
-								changeDate(column.id, date);
+								// changeDate(column.id, date);
 							}}
 							initialFocus
 						/>
@@ -81,7 +65,7 @@ export const columns: ColumnDef<Transaction>[] = [
 	{
 		accessorKey: "name",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Name" />
+			<DataTableColumnHeader column={column} title="Name" className="pl-1" />
 		),
 		cell: ({ row }) => {
 			const name = row.getValue<string>("name");
@@ -91,7 +75,7 @@ export const columns: ColumnDef<Transaction>[] = [
 				<Input
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="border-0 shadow-none -translate-x-3 flex-1"
+					className="border-0 shadow-none  flex-1 hover:bg-accent w-40"
 				/>
 			);
 		},
@@ -99,17 +83,30 @@ export const columns: ColumnDef<Transaction>[] = [
 	{
 		accessorKey: "amount",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Amount" />
+			<DataTableColumnHeader column={column} title="Amount" className="pl-1" />
 		),
 		cell: ({ row }) => {
 			const amount = row.getValue<number>("amount");
-			const [input, setInput] = useState(amount);
 
+			const setTransactions = useSetAtom(transactionsAtom);
+
+			const handleInputChange = (data: ChangeEvent<HTMLInputElement>) => {
+				setTransactions((transactions) => {
+					return transactions.map((transaction) => {
+						if (transaction.id !== row.id) return transaction;
+
+						const newData = { ...transaction, ammount: data.target.value };
+
+						writeDataFile(`${row.id}.json`, JSON.stringify(newData));
+						return newData;
+					});
+				});
+			};
 			return (
 				<Input
-					value={input}
-					onChange={(e) => setInput(Number.parseInt(e.target.value))}
-					className="border-0 shadow-none -translate-x-3"
+					defaultValue={amount}
+					onChange={handleInputChange}
+					className="border-0 shadow-none hover:bg-accent w-28"
 				/>
 			);
 		},
@@ -117,14 +114,14 @@ export const columns: ColumnDef<Transaction>[] = [
 	{
 		accessorKey: "running-total",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Running Total" />
+			<DataTableColumnHeader column={column} title="Total" />
 		),
 		cell: ({ row }) => {
 			// TODO actual logic
 			const amount = row.getValue<number>("amount");
 			const runningTotal = amount + 234;
-			
-			return <p>{runningTotal}</p>;
+
+			return <p className="pl-3">{runningTotal}</p>;
 		},
 	},
 	{
@@ -132,6 +129,96 @@ export const columns: ColumnDef<Transaction>[] = [
 		cell: ({ row }) => <OpenMenu id={row.id} />,
 	},
 ];
+
+// function tableInput({}) {
+// 	const amount = row.getValue<number>("amount");
+
+// 	const setTransactions = useSetAtom(transactionsAtom);
+
+// 	const handleInputChange = (data: string) => {
+// 		const id = form.watch("id");
+
+// 		setTransactions((transactions) => {
+// 			return transactions.map((transaction) => {
+// 				if (transaction.id !== id) return transaction;
+
+// 				const newData = { ...transaction, [name]: data };
+
+// 				writeDataFile(`${id}.json`, JSON.stringify(newData));
+// 				return newData;
+// 			});
+// 		});
+// 	};
+
+// 	return (
+// 		<>
+// 		<Input
+// 			value={input}
+// 			onChange={(e) => setInput(Number.parseInt(e.target.value))}
+// 			className="border-0 shadow-none hover:bg-accent w-28"
+// 			/>
+
+// 			</>
+// 	);
+// }
+
+// function TransactionDetailInput({
+// 	form,
+// 	name,
+// 	label = toTitleCase(name),
+// 	placeholder = toTitleCase(name),
+// 	includeLabel = true,
+// 	...props
+// }: TransactionDetailInputProps) {
+// 	const setTransactions = useSetAtom(transactionsAtom);
+
+// 	const handleInputChange = (data: string) => {
+// 		const id = form.watch("id");
+
+// 		setTransactions((transactions) => {
+// 			return transactions.map((transaction) => {
+// 				if (transaction.id !== id) return transaction;
+
+// 				const newData = { ...transaction, [name]: data };
+
+// 				writeDataFile(`${id}.json`, JSON.stringify(newData));
+// 				return newData;
+// 			});
+// 		});
+// 	};
+
+// 	return (
+// 		<FormField
+// 			control={form.control}
+// 			name={name}
+// 			render={({ field }) => {
+// 				if (typeof field.value !== "string" && typeof field.value !== "number") {
+// 					throw new Error("Invalid value");
+// 				}
+// 				return (
+// 					<FormItem className="flex items-center text-sm h-10 space-y-0">
+// 						{includeLabel && (
+// 							<FormLabel className="min-w-32 font-medium">{label}</FormLabel>
+// 						)}
+// 						<FormControl>
+// 							<Input
+// 								className="hover:bg-accent flex-1"
+// 								placeholder={placeholder}
+// 								{...props}
+// 								{...field}
+// 								value={field.value}
+// 								onChange={(e) => {
+// 									handleInputChange(e.target.value);
+// 									field.onChange(e.target.value);
+// 								}}
+// 							/>
+// 						</FormControl>
+// 					</FormItem>
+// 				);
+// 			}}
+// 		/>
+// 	);
+// }
 
 function OpenMenu({ id }: { id: string }) {
 	const setSelectedTransactionId = useSetAtom(selectedTransactionIdAtom);
@@ -146,6 +233,7 @@ function OpenMenu({ id }: { id: string }) {
 				<span className="sr-only">Open menu</span>
 				<MoreVertical className="h-4 w-4" />
 			</Button>
+
 			<Sheet>
 				<SheetTrigger asChild>
 					<Button
@@ -157,7 +245,6 @@ function OpenMenu({ id }: { id: string }) {
 						<MoreVertical className="h-4 w-4" />
 					</Button>
 				</SheetTrigger>
-
 				<SheetContent className="w-[400px] sm:w-[540px]">
 					<TransactionDetails />
 				</SheetContent>
