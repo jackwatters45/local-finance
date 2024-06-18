@@ -25,6 +25,10 @@ const navItems: Array<NavItemProps> = [
 		href: "/reporting",
 		title: "Reporting",
 	},
+	{
+		href: "/settings",
+		title: "Settings",
+	},
 ];
 
 export default function Nav() {

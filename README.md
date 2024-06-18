@@ -2,18 +2,13 @@
 
 ## TODO
 
-TODO figure out a better data structure
+- add new -> needs to write to and display
+- implement add field
+- implement delete field
+- super json??
 
-- actually writing to file
-  - edit
-  - add new -> needs to write to and display
-
-  - implement add field
-  - implement delete field
-  - super json??
-
-  - concurency between details and table 
-
+- figure out a better data structure
+  - impossible to have a smooth app working this way
 - should index just be a redirect / onboarding page? onboarding logic.
 
 - implementactual file stuff
@@ -50,6 +45,7 @@ TODO figure out a better data structure
   - logo
   - check out other fonts
   - muted text color for nav + footer + placeholders + etc
+  - nav -> icons when small
 
 - misc (skip depending on time)
 
@@ -63,6 +59,11 @@ TODO figure out a better data structure
   - make downloadable
   - add to portfolio + yats
   - Blog post
+
+## Roadmap
+
+- [ ] allow users to edit from the table
+  - [ ] input concurency becomes a problem
 
 ## System design stuff
 

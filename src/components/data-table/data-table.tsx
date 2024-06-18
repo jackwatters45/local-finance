@@ -66,7 +66,7 @@ export function DataTable<TData extends { id: string }, TValue>({
 								return (
 									<TableHead
 										key={header.id}
-										className={cn("", i === 0 ? "pl-8" : "pl-3")}
+										className={cn("", i === 0 ? "pl-8" : "pl-0")}
 									>
 										{header.isPlaceholder
 											? null
@@ -86,7 +86,7 @@ export function DataTable<TData extends { id: string }, TValue>({
 								className="group"
 							>
 								{row.getVisibleCells().map((cell, i) => (
-									<TableCell key={cell.id} className={cn("", i === 0 ? "pl-4" : "pl-0")}>
+									<TableCell key={cell.id} className={cn("", i === 0 ? "pl-8" : "pl-0")}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

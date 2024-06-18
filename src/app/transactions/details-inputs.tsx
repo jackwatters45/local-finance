@@ -109,11 +109,9 @@ function TransactionDetailDateInput({
 
 		setTransactions((transactions) => {
 			return transactions.map((transaction) => {
-				console.log("handleSelect", transaction.id, id);
 				if (transaction.id !== id) return transaction;
 
 				const newData = { ...transaction, [name]: data };
-				console.log("handleSelect", newData);
 
 				writeDataFile(`${id}.json`, JSON.stringify(newData));
 				return newData;
@@ -170,12 +168,22 @@ function TransactionDetailNotesInput({
 	form,
 	name,
 }: TransactionDetailBaseProps) {
-	const handleInputChange = useDebouncedCallback((data: string | number) => {
+	const setTransactions = useSetAtom(transactionsAtom);
+
+	const handleInputChange = (data: string) => {
 		const id = form.watch("id");
-		const formData = form.getValues();
-		const newData = { ...formData, [name]: data };
-		writeDataFile(`${id}.json`, JSON.stringify(newData));
-	}, 300);
+
+		setTransactions((transactions) => {
+			return transactions.map((transaction) => {
+				if (transaction.id !== id) return transaction;
+
+				const newData = { ...transaction, [name]: data };
+
+				writeDataFile(`${id}.json`, JSON.stringify(newData));
+				return newData;
+			});
+		});
+	};
 
 	return (
 		<FormField
@@ -184,7 +192,14 @@ function TransactionDetailNotesInput({
 			render={({ field }) => (
 				<FormItem className="flex flex-col space-y-4">
 					<FormControl>
-						<Textarea placeholder="Notes..." {...field} />
+						<Textarea
+							placeholder="Notes..."
+							{...field}
+							onChange={(e) => {
+								handleInputChange(e.target.value);
+								field.onChange(e.target.value);
+							}}
+						/>
 					</FormControl>
 				</FormItem>
 			)}
