@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { transactionMetaAtom } from "../providers";
+import { transactionMetaAtom } from "../../providers";
 import { useEffect, useState } from "react";
 import { readDataFile } from "@/lib/tauri";
 import TransactionForm from "./details-form";

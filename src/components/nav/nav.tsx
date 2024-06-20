@@ -10,23 +10,23 @@ export interface NavProps {
 
 const navItems: Array<NavItemProps> = [
 	{
-		href: "/",
+		href: "/app/transactions",
 		title: "Transactions",
 	},
 	{
-		href: "/budgeting",
+		href: "/app/budgeting",
 		title: "Budgeting",
 	},
 	{
-		href: "/recurring",
+		href: "/app/recurring",
 		title: "Recurring",
 	},
 	{
-		href: "/reporting",
+		href: "/app/reporting",
 		title: "Reporting",
 	},
 	{
-		href: "/settings",
+		href: "/app/settings",
 		title: "Settings",
 	},
 ];

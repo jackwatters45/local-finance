@@ -18,7 +18,12 @@ export const settingsAtom = atom<Settings>({
 	theme: "system",
 	baseDirectory: "",
 	appDirectory: "",
+
 	config: {
+		user: {
+			isOnboarded: false,
+			startingBalance: 0,
+		},
 		options: {
 			category: CATEGORIES,
 			tags: [],

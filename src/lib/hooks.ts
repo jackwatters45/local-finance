@@ -3,7 +3,7 @@ import React from "react";
 
 import { writeDataFile } from "./tauri";
 import { transactionMetaAtom, transactionsAtom } from "@/app/providers";
-import { getDefaultTransaction } from "@/app/transactions/details-form";
+import { getDefaultTransaction } from "@/app/app/transactions/details-form";
 import type { Transaction } from "@/types";
 
 export function useMirroredWidth(): [React.RefObject<HTMLElement>, number] {

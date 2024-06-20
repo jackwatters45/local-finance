@@ -8,7 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { readDataFile, writeDataFile } from "@/lib/tauri";
 import TransactionDetails from "./details";
-import { transactionMetaAtom, transactionsAtom } from "../providers";
+import { transactionMetaAtom, transactionsAtom } from "../../providers";
 import { cn } from "@/lib/utils";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";

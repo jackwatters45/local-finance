@@ -88,6 +88,8 @@ export async function readDataFile(
 
 export async function readAllTransactions() {
 	try {
+		const startTime = performance.now();
+
 		const dir = await readDir(APP_DIRECTORY, {
 			dir: BaseDirectory.AppData,
 		});
@@ -100,6 +102,9 @@ export async function readAllTransactions() {
 
 			if (data) files.push(data);
 		}
+
+		const endTime = performance.now();
+		console.log(`readAllTransactions took ${endTime - startTime}ms`);
 
 		return files;
 	} catch (error) {

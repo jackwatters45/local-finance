@@ -9,7 +9,7 @@ import { deleteDataFile } from "@/lib/tauri";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import type { Transaction } from "@/types";
+import type { BaseInput, Transaction } from "@/types";
 import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -32,11 +32,12 @@ import {
 	settingsAtom,
 	transactionMetaAtom,
 	transactionsAtom,
-} from "../providers";
-import TransactionDetailInput from "./inputs/input";
-import TransactionDetailDateInput from "./inputs/date";
-import TransactionDetailNotesInput from "./inputs/notes";
-import { SelectInput, MultiSelectInput } from "./inputs/select";
+} from "../../providers";
+import Input from "../../../components/inputs/input";
+import DateInput from "../../../components/inputs/date";
+import NotesInput from "../../../components/inputs/notes";
+import { SelectInput, MultiSelectInput } from "../../../components/inputs/select";
+import { run } from "node:test";
 
 export const transactionFormSchema = z.object({
 	id: z.string(),
@@ -49,6 +50,7 @@ export const transactionFormSchema = z.object({
 	tags: z.array(z.string()),
 	recurring: z.boolean(),
 	notes: z.string(),
+	runningTotal: z.number(),
 });
 
 export const getDefaultTransaction = (
@@ -62,6 +64,7 @@ export const getDefaultTransaction = (
 	tags: transaction?.tags ?? [],
 	recurring: transaction?.recurring ?? false,
 	notes: transaction?.notes ?? "",
+	runningTotal: transaction?.runningTotal ?? 0,
 });
 
 // TODO add some focused bg for inputs
@@ -85,20 +88,22 @@ export default function TransactionForm({
 			<form>
 				<div className="space-y-8 py-12 lg:px-8">
 					<div className="w-full flex items-center justify-between">
-						<TransactionDetailInput
+
+						<Input
 							form={form}
 							name="name"
 							placeholder="Transaction Name"
-							className="w-full text-xl flex-1 font-semibold p-0"
-							includeLabel={false}
+							label="Name"
+							className="w-full text-xl flex-1 font-semibold -translate-x-4"
+							omitLabel={true}
 						/>
 						<div className="pl-4 lg:pr-8">
 							<MoreOptionsDropdown form={form} />
 						</div>
 					</div>
 					<div>
-						<TransactionDetailInput form={form} name="amount" type="number" />
-						<TransactionDetailDateInput form={form} name="date" />
+						<Input form={form} name="amount" type="number" label="Amount" />
+						<DateInput form={form} name="date" label="Date" />
 						<SelectInput
 							form={form}
 							name="category"
@@ -113,7 +118,7 @@ export default function TransactionForm({
 						/>
 					</div>
 					<Separator />
-					<TransactionDetailNotesInput form={form} name="notes" />
+					<NotesInput form={form} name="notes" />
 				</div>
 			</form>
 		</Form>

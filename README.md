@@ -4,9 +4,10 @@
 
 - commits
 
-- net worth
+- onboarding page
+- settings should look pretty similar to the onboarding page
 
-- skeletons for other pages
+- net worth - currently wrong ...
 
 - other pages - combine a few pages where logical (all similar format to transactions!!!!)
 
@@ -33,6 +34,7 @@
 
 Table
 
+- initial load - start by loading enough to show the first page -> load more
 - virtualized list
 - scrolling
 - bulk table select + delete
@@ -55,11 +57,10 @@ Table
 
 ## Roadmap
 
-
 - would really prefer to create a folder for settings instead of a single file
 - allow users to edit from the table
   - input concurency becomes a problem
-- switch to vite + react compiler (no reason to use next rn)
+- switch to vite + react compiler + react query(no reason to use next rn)
 - ai integration - categories etc
 - export + import data
 - implement add/delete fields

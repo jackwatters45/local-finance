@@ -21,7 +21,7 @@ import {
 	FormLabel,
 } from "@/components/ui/form";
 
-export default function TransactionDetailDateInput<T extends BaseInput>(
+export default function DateInput<T extends BaseInput>(
 	props: Omit<InputBaseProps<T>, "placeholder">,
 ) {
 	const updateTransaction = useUpdateTransaction();

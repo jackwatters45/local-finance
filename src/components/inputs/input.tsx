@@ -7,7 +7,6 @@ import type { Path } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { useUpdateTransaction } from "@/lib/hooks";
 import type { BaseInput, InputBaseProps } from "@/types";
-import type { z } from "zod";
 
 import {
 	FormControl,
@@ -17,14 +16,18 @@ import {
 } from "@/components/ui/form";
 import { Input as ShadcnInput } from "@/components/ui/input";
 
-type TransactionDetailInputProps<T extends BaseInput> = InputBaseProps<T> &
-	Omit<React.InputHTMLAttributes<HTMLInputElement>, "form"> & {
-		omitLabel?: boolean;
-	};
+interface SelectInputProps<T extends BaseInput> extends InputBaseProps<T> {
+	options: Array<string>;
+}
 
-export default function Input<T extends BaseInput>(
-	props: TransactionDetailInputProps<T>,
-) {
+interface InputProps<T extends BaseInput>
+	extends InputBaseProps<T>,
+		Omit<React.InputHTMLAttributes<HTMLInputElement>, "form" | "name" | "type"> {
+	omitLabel?: boolean;
+	type?: "text" | "number";
+}
+
+export default function Input<T extends BaseInput>(props: InputProps<T>) {
 	const updateTransaction = useUpdateTransaction();
 
 	const handleInputChange = useDebouncedCallback((data: string | number) => {
@@ -38,10 +41,14 @@ export default function Input<T extends BaseInput>(
 			name={props.name}
 			render={({ field }) => {
 				if (!props.type && typeof field.value !== "string") {
-					throw new Error("Input must be a string when type is not specified");
+					throw new Error(
+						`Input must be a string when type is not specified. Received: ${typeof field.value}`,
+					);
 				}
 				if (props.type === "number" && typeof field.value !== "number") {
-					throw new Error("Invalid must be a number when type is number");
+					throw new Error(
+						`Invalid must be a number when type is number. Received: ${typeof field.value}`,
+					);
 				}
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
@@ -56,8 +63,13 @@ export default function Input<T extends BaseInput>(
 								{...field}
 								value={field.value}
 								onChange={(e) => {
-									field.onChange(e.target.value);
-									handleInputChange(e.target.value);
+									const value =
+										props.type === "number"
+											? Number.parseFloat(e.target.value)
+											: e.target.value;
+
+									field.onChange(value);
+									handleInputChange(value);
 								}}
 							/>
 						</FormControl>

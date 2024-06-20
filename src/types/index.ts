@@ -1,4 +1,4 @@
-import type { transactionFormSchema } from "@/app/transactions/details-form";
+import type { transactionFormSchema } from "@/app/app/transactions/details-form";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { z, ZodType } from "zod";
 
@@ -11,21 +11,26 @@ export type Transaction = {
 	tags: string[]; // TODO
 	recurring: boolean;
 	notes: string;
+	runningTotal: number;
 	// history: string; // TODO
 };
 
-export type Config = {
-	options: ConfigOptions;
-};
-
-export type ConfigOptions = {
+type OptionsConfig = {
 	category: string[];
 	tags: string[];
 };
+export type ConfigOption = keyof OptionsConfig;
 
-export type ConfigOption = keyof ConfigOptions;
+type UserCofig = {
+	startingBalance: number;
+	isOnboarded: boolean;
+};
 
-// TODO refine
+export type Config = {
+	user: UserCofig;
+	options: OptionsConfig;
+};
+
 export type Settings = {
 	theme: "system" | "light" | "dark";
 	baseDirectory: string | undefined;
