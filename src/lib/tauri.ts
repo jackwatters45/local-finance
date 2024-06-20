@@ -1,5 +1,5 @@
-import type { Transaction } from "@/types";
-import { APP_DIRECTORY } from "../app/constants";
+import type { Settings, Transaction } from "@/types";
+import { APP_DIRECTORY } from "./constants";
 import {
 	BaseDirectory,
 	createDir,
@@ -47,7 +47,32 @@ export async function writeDataFile<T>(
 	}
 }
 
-export async function readTransactionData(
+// TODO
+export async function readSettingsFile(): Promise<Settings | null> {
+	try {
+		const content = await readTextFile(`${APP_DIRECTORY}/.settings.json`, {
+			dir: BaseDirectory.AppData,
+		});
+		return superjson.parse<Settings>(content);
+	} catch (error) {
+		console.error("Error reading file .settings.json:", error);
+		return null;
+	}
+}
+
+export async function writeSettingsFile(content: Settings): Promise<void> {
+	try {
+		const stringified = superjson.stringify(content);
+		await writeTextFile(`${APP_DIRECTORY}/.settings.json`, stringified, {
+			dir: BaseDirectory.AppData,
+		});
+		console.log("Data written to .settings.json");
+	} catch (error) {
+		console.error("Error writing file .settings.json:", error);
+	}
+}
+
+export async function readDataFile(
 	fileName: string,
 ): Promise<Transaction | null> {
 	try {
@@ -71,7 +96,7 @@ export async function readAllTransactions() {
 		for (const file of dir) {
 			if (!file.name || file.name?.startsWith(".")) continue;
 
-			const data = await readTransactionData(file.name);
+			const data = await readDataFile(file.name);
 
 			if (data) files.push(data);
 		}

@@ -1,6 +1,6 @@
 "use client";
 
-import { APP_NAME_PRETTY } from "@/app/constants";
+import { APP_NAME_PRETTY } from "@/lib/constants";
 import NavItem from "./nav-item";
 import type { NavItemProps } from "./nav-item";
 

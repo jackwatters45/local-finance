@@ -1,9 +1,12 @@
 "use client";
 
 import React from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { deleteDataFile } from "@/lib/tauri";
+import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import type { Transaction } from "@/types";
@@ -24,17 +27,18 @@ import {
 	FormItem,
 	FormLabel,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-	TransactionDetailDateInput,
-	TransactionDetailInput,
-	TransactionDetailNotesInput,
-} from "./details-inputs";
-import { useSetAtom } from "jotai";
-import { transactionsAtom } from "../providers";
-import { deleteDataFile } from "@/lib/tauri";
 
-export const formSchema = z.object({
+import {
+	settingsAtom,
+	transactionMetaAtom,
+	transactionsAtom,
+} from "../providers";
+import TransactionDetailInput from "./inputs/input";
+import TransactionDetailDateInput from "./inputs/date";
+import TransactionDetailNotesInput from "./inputs/notes";
+import { SelectInput, MultiSelectInput } from "./inputs/select";
+
+export const transactionFormSchema = z.object({
 	id: z.string(),
 	name: z.string().min(2, {
 		message: "Name must be at least 2 characters.",
@@ -45,55 +49,36 @@ export const formSchema = z.object({
 	tags: z.array(z.string()),
 	recurring: z.boolean(),
 	notes: z.string(),
-	isNew: z.boolean().optional(),
 });
 
 export const getDefaultTransaction = (
 	transaction: Partial<Transaction> | null,
-) => {
-	const base = {
-		id: transaction?.id ?? nanoid(),
-		name: transaction?.name ?? "",
-		date: transaction?.date ? new Date(transaction.date) : new Date(),
-		amount: transaction?.amount ?? 0,
-		category: transaction?.category ?? "",
-		tags: transaction?.tags ?? [],
-		recurring: transaction?.recurring ?? false,
-		notes: transaction?.notes ?? "",
-	};
-
-	return !transaction?.id
-		? {
-				...base,
-				isNew: true,
-			}
-		: base;
-};
+) => ({
+	id: transaction?.id ?? nanoid(),
+	name: transaction?.name ?? "",
+	date: transaction?.date ? new Date(transaction.date) : new Date(),
+	amount: transaction?.amount ?? 0,
+	category: transaction?.category ?? "",
+	tags: transaction?.tags ?? [],
+	recurring: transaction?.recurring ?? false,
+	notes: transaction?.notes ?? "",
+});
 
 // TODO add some focused bg for inputs
 // TODO select + multi select (tags + categories)
 export default function TransactionForm({
 	transaction,
 }: { transaction: Transaction | null }) {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const settings = useAtomValue(settingsAtom);
+
+	const form = useForm<z.infer<typeof transactionFormSchema>>({
+		resolver: zodResolver(transactionFormSchema),
 		defaultValues: getDefaultTransaction(transaction),
 	});
 
 	React.useEffect(() => {
 		form.reset(getDefaultTransaction(transaction));
 	}, [transaction, form]);
-
-	const setTransactions = useSetAtom(transactionsAtom);
-	const handleDelete = () => {
-		const id = form.watch("id");
-
-		deleteDataFile(id);
-
-		setTransactions((transactions) => {
-			return transactions.filter((transaction) => transaction.id !== id);
-		});
-	};
 
 	return (
 		<Form {...form}>
@@ -108,73 +93,60 @@ export default function TransactionForm({
 							includeLabel={false}
 						/>
 						<div className="pl-4 lg:pr-8">
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant={"ghost"} size={"icon"} className="rounded-full p-0">
-										<MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+							<MoreOptionsDropdown form={form} />
 						</div>
 					</div>
 					<div>
 						<TransactionDetailInput form={form} name="amount" type="number" />
 						<TransactionDetailDateInput form={form} name="date" />
-						{/* TODO select */}
-						<FormField
-							control={form.control}
+						<SelectInput
+							form={form}
 							name="category"
-							render={({ field }) => (
-								<FormItem className="flex items-center text-sm h-10 space-y-0">
-									<FormLabel className="min-w-32 w-32 font-medium">Category</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Category"
-											className="hover:bg-accent flex-1"
-											{...field}
-										/>
-									</FormControl>
-								</FormItem>
-							)}
+							label="Category"
+							options={settings.config.options.category ?? []}
 						/>
-						{/* TODO multi select */}
-						<FormField
-							control={form.control}
+						<MultiSelectInput
+							form={form}
 							name="tags"
-							render={({ field }) => (
-								<FormItem className="flex items-center text-sm h-10 space-y-0">
-									<FormLabel className="w-32 font-medium">Tags</FormLabel>
-									<FormControl>
-										<div className="space-x-2 flex flex-wrap">
-											{field?.value?.map((tag) => (
-												<Badge
-													key={tag}
-													className="text-sm rounded-md py-0 px-1 border-foreground"
-													variant={"outline"}
-												>
-													{tag}
-												</Badge>
-											))}
-										</div>
-									</FormControl>
-								</FormItem>
-							)}
+							label="Tags"
+							options={settings.config.options.tags ?? []}
 						/>
-						{/* <Button
-							variant={"ghost"}
-							type="button"
-							className="text-muted-foreground -translate-x-4"
-						>
-							<span>Add field</span>
-						</Button> */}
 					</div>
 					<Separator />
 					<TransactionDetailNotesInput form={form} name="notes" />
 				</div>
 			</form>
 		</Form>
+	);
+}
+
+function MoreOptionsDropdown({
+	form,
+}: { form: UseFormReturn<z.infer<typeof transactionFormSchema>> }) {
+	const setTransactions = useSetAtom(transactionsAtom);
+	const setTransactionMeta = useSetAtom(transactionMetaAtom);
+	const handleDelete = () => {
+		const id = form.watch("id");
+
+		setTransactionMeta({ id: nanoid(), isNew: true });
+
+		setTransactions((transactions) => {
+			return transactions.filter((transaction) => transaction.id !== id);
+		});
+
+		deleteDataFile(id);
+	};
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant={"ghost"} size={"icon"} className="rounded-full p-0">
+					<MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
+				<DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }

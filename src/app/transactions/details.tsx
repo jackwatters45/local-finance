@@ -1,29 +1,21 @@
-import { useAtomValue } from "jotai";
-import { selectedTransactionIdAtom } from "../providers";
-import type { Transaction } from "@/types";
+import { useAtom } from "jotai";
+import { transactionMetaAtom } from "../providers";
 import { useEffect, useState } from "react";
-import { readTransactionData } from "@/lib/tauri";
+import { readDataFile } from "@/lib/tauri";
 import TransactionForm from "./details-form";
+import type { Transaction } from "@/types";
 
 export default function TransactionDetails() {
-	const transactionId = useAtomValue(selectedTransactionIdAtom);
-	const [transaction, setTransaction] = useState<null | Transaction>(null);
+	const [transactionId] = useAtom(transactionMetaAtom);
+	const [transaction, setTransaction] = useState<Transaction | null>(null);
 
 	useEffect(() => {
-		if (!transactionId) return setTransaction(null);
-		readTransactionData(`${transactionId}.json`).then((transaction) => {
+		if (!transactionId.id || transactionId.isNew) return setTransaction(null);
+
+		readDataFile(`${transactionId.id}.json`).then((transaction) => {
 			setTransaction(transaction);
 		});
 	}, [transactionId]);
-
-	// useEffect(() => {
-	// 	console.log("transactionId", transactionId);
-	// }, [transactionId]);
-	// useEffect(() => {
-	// 	console.log("transaction", transaction);
-	// }, [transaction]);
-
-	if (!transaction && transactionId) return null;
 
 	return <TransactionForm transaction={transaction} />;
 }

@@ -2,20 +2,14 @@
 
 ## TODO
 
-commits
+- commits
 
-- implement delete
-- others..
+- net worth
 
-- scrolling
+- skeletons for other pages
 
-- figure out a better data structure?
+- other pages - combine a few pages where logical (all similar format to transactions!!!!)
 
-- virtualized list
-
-- other pages - combine a few pages where logical
-
-  - net worth
   - IOUs + Expected
   - Goal tracking
   - footer pages -> just text etc - not docs or anything
@@ -23,26 +17,33 @@ commits
 
 - should index just be a redirect / onboarding page? onboarding logic.
 
-- Styling
+- misc
   
+  - negative values
   - details page
-  - responsive (hamburger menu)
+  - Nav -> hamburger or icons
   - style all shadcn ui
   - better name
-  - meta data
-  - add lines between columns??
-  - style table better
   - color scheme - dark mode similar to obsidian / lax talk (lighter dark mode)
   - logo
   - check out other fonts
   - muted text color for nav + footer + placeholders + etc
-  - nav -> icons when small
+  - default number
+  - badge styling
 
-- misc (skip depending on time)
+Table
 
-  - ai integration - categories etc
-  - export + import data
-  - implement add/delete fields
+- virtualized list
+- scrolling
+- bulk table select + delete
+- add more table options
+- add lines between columns??
+- style table better
+- sort
+
+- test
+  - add a few thousand transactions
+  - figure out a better data structure?
 
 - Publish
 
@@ -54,8 +55,14 @@ commits
 
 ## Roadmap
 
-- [ ] allow users to edit from the table
-  - [ ] input concurency becomes a problem
+
+- would really prefer to create a folder for settings instead of a single file
+- allow users to edit from the table
+  - input concurency becomes a problem
+- switch to vite + react compiler (no reason to use next rn)
+- ai integration - categories etc
+- export + import data
+- implement add/delete fields
 
 ## System design stuff
 

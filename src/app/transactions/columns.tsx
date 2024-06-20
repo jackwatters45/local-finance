@@ -6,9 +6,9 @@ import type { ChangeEvent } from "react";
 import { MoreVertical } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { readTransactionData, writeDataFile } from "@/lib/tauri";
+import { readDataFile, writeDataFile } from "@/lib/tauri";
 import TransactionDetails from "./details";
-import { selectedTransactionIdAtom, transactionsAtom } from "../providers";
+import { transactionMetaAtom, transactionsAtom } from "../providers";
 import { cn } from "@/lib/utils";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
@@ -132,7 +132,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 function OpenMenu({ id }: { id: string }) {
-	const setTransactionId = useSetAtom(selectedTransactionIdAtom);
+	const setTransactionMeta = useSetAtom(transactionMetaAtom);
 
 	return (
 		<>
@@ -140,7 +140,7 @@ function OpenMenu({ id }: { id: string }) {
 				<Button
 					variant="ghost"
 					className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 hidden lg:flex"
-					onClick={() => setTransactionId(id)}
+					onClick={() => setTransactionMeta({id})}
 				>
 					<span className="sr-only">Open menu</span>
 					<MoreVertical className="h-4 w-4" />
@@ -151,7 +151,7 @@ function OpenMenu({ id }: { id: string }) {
 						<Button
 							variant="ghost"
 							className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 lg:hidden"
-							onClick={() => setTransactionId(id)}
+							onClick={() => setTransactionMeta({id})}
 						>
 							<span className="sr-only">Open menu</span>
 							<MoreVertical className="h-4 w-4" />

@@ -14,7 +14,7 @@ import {
 
 export default function Footer() {
 	return (
-		<footer className="h-12 border-t border-border w-full text-sm text-accent-foreground">
+		<footer className="h-12 border-t border-border w-full text-sm text-accent-foreground fixed bottom-0 z-10 bg-background">
 			<div className="mx-auto h-full flex items-center justify-between max-w-screen-2xl px-8">
 				<div className="flex items-center gap-8">
 					<a className="hover:underline hover:opacity-90" href="/about">

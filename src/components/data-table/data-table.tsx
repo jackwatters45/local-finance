@@ -8,6 +8,9 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import React from "react";
+
 import type {
 	ColumnDef,
 	ColumnFiltersState,
@@ -22,7 +25,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import DataTableFilter from "./data-table-filter";
 import { cn } from "@/lib/utils";
@@ -36,8 +38,10 @@ export function DataTable<TData extends { id: string }, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
-	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+		[],
+	);
 
 	const table = useReactTable({
 		data,
@@ -53,6 +57,17 @@ export function DataTable<TData extends { id: string }, TValue>({
 			sorting,
 			columnFilters,
 		},
+	});
+
+	const { rows } = table.getRowModel();
+
+	const parentRef = React.useRef<HTMLDivElement>(null);
+
+	const virtualizer = useVirtualizer({
+		count: rows.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => 34,
+		overscan: 20,
 	});
 
 	return (
