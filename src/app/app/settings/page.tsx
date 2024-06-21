@@ -4,7 +4,12 @@ import { useAtom } from "jotai";
 import { useTheme } from "next-themes";
 
 import { settingsAtom } from "@/app/providers";
-import { writeSettingsFile } from "@/lib/tauri";
+import {
+	deleteDataSubdirectories,
+	deleteDataSubdirectoriesAndSettings,
+	resetSettingsFile,
+	writeSettingsFile,
+} from "@/lib/tauri";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +22,17 @@ import {
 	SelectContent,
 	SelectItem,
 } from "@/components/ui/select";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Settings() {
 	const { theme, setTheme } = useTheme();
@@ -79,7 +95,6 @@ export default function Settings() {
 						</CardItem>
 					</CardContent>
 				</Card>
-
 				<Separator />
 				<Card className="rounded-none shadow-none bg-background border-none">
 					<CardHeader>
@@ -91,7 +106,6 @@ export default function Settings() {
 								<Text>Theme</Text>
 								<SubText>Light or dark. Nothing fancy.</SubText>
 							</div>
-
 							<Select onValueChange={(theme) => setTheme(theme)} defaultValue={theme}>
 								<SelectTrigger className="w-[180px]">
 									<SelectValue placeholder="Theme" />
@@ -116,9 +130,11 @@ export default function Settings() {
 								<Text>Reset Settings</Text>
 								<SubText>Reset all settings to the default values.</SubText>
 							</div>
-							<Button variant="destructive" size="sm">
-								Delete Settings
-							</Button>
+							<DangerDialog
+								title="Reset Settings"
+								description="Reset all settings to the default values."
+								action={resetSettingsFile}
+							/>
 						</CardItem>
 						<Separator />
 						<CardItem>
@@ -126,9 +142,11 @@ export default function Settings() {
 								<Text>Delete Data</Text>
 								<SubText>Remove all your data from the app.</SubText>
 							</div>
-							<Button variant="destructive" size="sm">
-								Delete Data
-							</Button>
+							<DangerDialog
+								title="Delete Data"
+								description="Remove all your data from the app."
+								action={deleteDataSubdirectories}
+							/>
 						</CardItem>
 						<Separator />
 						<CardItem>
@@ -136,9 +154,11 @@ export default function Settings() {
 								<Text>Start over</Text>
 								<SubText>Reset settings and delete all your data.</SubText>
 							</div>
-							<Button variant="destructive" size="sm">
-								Delete All
-							</Button>
+							<DangerDialog
+								title="Delete All"
+								description="Reset settings and delete all your data."
+								action={deleteDataSubdirectoriesAndSettings}
+							/>
 						</CardItem>
 					</CardContent>
 				</Card>
@@ -157,4 +177,32 @@ function Text(props: { children: string }) {
 
 function SubText({ children }: { children: React.ReactNode }) {
 	return <div className="text-sm text-muted-foreground">{children}</div>;
+}
+
+function DangerDialog(props: {
+	title: string;
+	description: string;
+	action: () => void;
+}) {
+	return (
+		<AlertDialog>
+			<AlertDialogTrigger asChild>
+				<Button variant="destructive" size="sm">
+					{props.title}
+				</Button>
+			</AlertDialogTrigger>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>{props.title}</AlertDialogTitle>
+					<AlertDialogDescription>{props.description}</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction onClick={props.action}>
+						{props.title.split(" ")[0]}
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	);
 }

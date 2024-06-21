@@ -20,28 +20,3 @@ export const hyphenToTitleCase = (str: string): string =>
 
 export const toHyphenCase = (str: string): string =>
 	str.toLowerCase().split(" ").join("-");
-
-export const getUpdatedSettingsAdd = (
-	settings: Settings,
-	data: string,
-	name: ConfigOption,
-) => ({
-	...settings,
-	config: {
-		...settings.config,
-		name: [...(settings.config.options[name] ?? []), data],
-	},
-});
-
-
-export const getUpdatedSettingsDelete = (
-	settings: Settings,
-	data: string,
-	name: ConfigOption,
-) => ({
-	...settings,
-	config: {
-		...settings.config,
-		[name]: settings.config.options[name]?.filter((option) => option !== data),
-	},
-});
