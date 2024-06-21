@@ -2,9 +2,18 @@ import { useAtom, useSetAtom } from "jotai";
 import React from "react";
 
 import { writeDataFile } from "./tauri";
-import { transactionMetaAtom, transactionsAtom } from "@/app/providers";
+import {
+	billMetaAtom,
+	billsAtom,
+	budgetMetaAtom,
+	budgetsAtom,
+	transactionMetaAtom,
+	transactionsAtom,
+} from "@/app/providers";
 import { getDefaultTransaction } from "@/app/app/transactions/details-form";
-import type { Transaction } from "@/types";
+import type { Bill, Budget, Subdirectory, Transaction } from "@/types";
+import { getDefaultBill } from "@/app/app/bills/details-form";
+import { getDefaultBudget } from "@/app/app/budget/details-form";
 
 export function useMirroredWidth(): [React.RefObject<HTMLElement>, number] {
 	const ref = React.useRef<HTMLElement>(null);
@@ -25,30 +34,53 @@ export function useMirroredWidth(): [React.RefObject<HTMLElement>, number] {
 	return [ref, width];
 }
 
-export const useUpdateTransaction = () => {
-	const setTransactions = useSetAtom(transactionsAtom);
-	const [transactionMeta, setTransactonMeta] = useAtom(transactionMetaAtom);
+const atomsMap = {
+	transactions: {
+		values: transactionsAtom,
+		meta: transactionMetaAtom,
+		default: getDefaultTransaction,
+	},
+	bills: {
+		values: billsAtom,
+		meta: billMetaAtom,
+		default: getDefaultBill,
+	},
+	budgets: {
+		values: budgetsAtom,
+		meta: budgetMetaAtom,
+		default: getDefaultBudget,
+	},
+};
 
-	return (id: string, data: Partial<Transaction>) => {
-		if (transactionMeta.isNew) {
-			const newTransaction = getDefaultTransaction({ id, ...data });
+export const useWriteInputToFile = (subdirectory: Subdirectory) => {
+	const {
+		values: valuesAtom,
+		meta: metaAtom,
+		default: getDefaultFunc,
+	} = atomsMap[subdirectory];
+	const setValues = useSetAtom(valuesAtom);
+	const [Meta, setMeta] = useAtom(metaAtom);
 
-			setTransactonMeta({ id });
+	return (id: string, data: Partial<Transaction | Bill | Budget>) => {
+		if (Meta.isNew) {
+			const newValue = getDefaultFunc({ id, ...data });
 
-			setTransactions((transactions) => {
-				return [...transactions, newTransaction];
+			setMeta({ id });
+
+			setValues((values: Transaction[] | Bill[] | Budget[]) => {
+				return [...values, newValue];
 			});
 
-			return writeDataFile(`${id}.json`, newTransaction);
+			return writeDataFile(subdirectory, `${id}.json`, newValue);
 		}
 
-		setTransactions((transactions) => {
-			return transactions.map((transaction) => {
-				if (transaction.id !== id) return transaction;
+		setValues((values: Transaction[] | Bill[] | Budget[]) => {
+			return values.map((v) => {
+				if (v.id !== id) return v;
 
-				const newData = { ...transaction, ...data };
+				const newData = { ...v, ...data };
 
-				writeDataFile(`${id}.json`, newData);
+				writeDataFile(subdirectory, `${id}.json`, newData);
 				return newData;
 			});
 		});

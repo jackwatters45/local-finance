@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { useUpdateTransaction } from "@/lib/hooks";
+import { useWriteInputToFile } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import type { BaseInput, InputBaseProps } from "@/types";
 import type { Path } from "react-hook-form";
@@ -24,11 +24,11 @@ import {
 export default function DateInput<T extends BaseInput>(
 	props: Omit<InputBaseProps<T>, "placeholder">,
 ) {
-	const updateTransaction = useUpdateTransaction(props.subdirectory);
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 
 	function handleSelect(data: Date | undefined) {
 		const id = props.form.watch("id" as Path<T>);
-		updateTransaction(id, { [props.name]: data });
+		writeInputToFile(id, { [props.name]: data });
 	}
 
 	return (

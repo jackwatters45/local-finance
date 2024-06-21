@@ -4,7 +4,7 @@ import React from "react";
 import { useDebouncedCallback } from "use-debounce";
 import type { Path } from "react-hook-form";
 
-import { useUpdateTransaction } from "@/lib/hooks";
+import { useWriteInputToFile } from "@/lib/hooks";
 import type { BaseInput, InputBaseProps } from "@/types";
 
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -19,10 +19,10 @@ type NotesInputProps<T extends NotesFields> = Omit<
 export default function NotesInput<T extends NotesFields>(
 	props: NotesInputProps<T>,
 ) {
-	const updateTransaction = useUpdateTransaction(props.subdirectory);
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 	const handleInputChange = useDebouncedCallback((data: string) => {
 		const id = props.form.watch("id" as Path<T>);
-		updateTransaction(id, { [props.name]: data });
+		writeInputToFile(id, { [props.name]: data });
 	}, 300);
 
 	return (

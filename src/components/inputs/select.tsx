@@ -7,7 +7,7 @@ import { Check, Delete, X } from "lucide-react";
 
 import { writeSettingsFile } from "@/lib/tauri";
 import { cn, toTitleCase } from "@/lib/utils";
-import { useMirroredWidth, useUpdateTransaction } from "@/lib/hooks";
+import { useMirroredWidth, useWriteInputToFile } from "@/lib/hooks";
 import type { BaseInput, ConfigOption, InputBaseProps } from "@/types";
 import { settingsAtom } from "@/app/providers";
 
@@ -55,18 +55,18 @@ export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
 
 	const label = props.label ?? toTitleCase(props.name);
 
-	const updateTransaction = useUpdateTransaction(props.subdirectory);
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 	const handleDeleteOption = () => {
 		const id = props.form.watch("id" as Path<T>);
 
 		props.form.setValue(props.name, "" as PathValue<T, Path<T>>);
-		updateTransaction(id, { [props.name]: "" });
+		writeInputToFile(id, { [props.name]: "" });
 	};
 
 	const handleValueChange = (data: string) => {
 		const id = props.form.watch("id" as Path<T>);
 
-		updateTransaction(id, { [props.name]: data });
+		writeInputToFile(id, { [props.name]: data });
 		props.form.setValue(props.name, data as PathValue<T, Path<T>>);
 	};
 
@@ -140,7 +140,7 @@ export function MultiSelectInput<T extends BaseInput>(
 
 	const label = props.label ?? toTitleCase(props.name);
 
-	const updateTransaction = useUpdateTransaction(props.subdirectory);
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 	const handleDeleteOption = (option: string) => {
 		const id = props.form.watch("id" as Path<T>);
 
@@ -148,7 +148,7 @@ export function MultiSelectInput<T extends BaseInput>(
 		const newValue = [...current.filter((value) => value !== option)];
 
 		props.form.setValue(props.name, newValue as PathValue<T, Path<T>>);
-		updateTransaction(id, { [props.name]: newValue });
+		writeInputToFile(id, { [props.name]: newValue });
 	};
 
 	const handleValueChange = (data: string) => {
@@ -160,7 +160,7 @@ export function MultiSelectInput<T extends BaseInput>(
 			const newValue = [...current.filter((value) => value !== data)];
 
 			props.form.setValue(props.name, newValue as PathValue<T, Path<T>>);
-			updateTransaction(id, { [props.name]: newValue });
+			writeInputToFile(id, { [props.name]: newValue });
 
 			return;
 		}
@@ -168,7 +168,7 @@ export function MultiSelectInput<T extends BaseInput>(
 		const newValue = [...current, data];
 
 		props.form.setValue(props.name, newValue as PathValue<T, Path<T>>);
-		updateTransaction(id, { [props.name]: newValue });
+		writeInputToFile(id, { [props.name]: newValue });
 	};
 
 	return (

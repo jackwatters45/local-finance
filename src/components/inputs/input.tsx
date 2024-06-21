@@ -5,7 +5,7 @@ import type React from "react";
 import type { Path } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import { useUpdateTransaction } from "@/lib/hooks";
+import { useWriteInputToFile } from "@/lib/hooks";
 import type { BaseInput, InputBaseProps } from "@/types";
 
 import {
@@ -16,10 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input as ShadcnInput } from "@/components/ui/input";
 
-interface SelectInputProps<T extends BaseInput> extends InputBaseProps<T> {
-	options: Array<string>;
-}
-
 interface InputProps<T extends BaseInput>
 	extends InputBaseProps<T>,
 		Omit<React.InputHTMLAttributes<HTMLInputElement>, "form" | "name" | "type"> {
@@ -28,11 +24,11 @@ interface InputProps<T extends BaseInput>
 }
 
 export default function Input<T extends BaseInput>(props: InputProps<T>) {
-	const updateTransaction = useUpdateTransaction(props.subdirectory);
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 
 	const handleInputChange = useDebouncedCallback((data: string | number) => {
 		const id = props.form.watch("id" as Path<T>);
-		updateTransaction(id, { [props.name]: data });
+		writeInputToFile(id, { [props.name]: data });
 	}, 300);
 
 	return (

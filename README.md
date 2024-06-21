@@ -6,6 +6,8 @@
 
 - commits
 
+- hook is wrong - not generic rn
+
 - recurring field
 
 - other pages
