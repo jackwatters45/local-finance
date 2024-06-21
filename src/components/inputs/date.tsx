@@ -24,7 +24,7 @@ import {
 export default function DateInput<T extends BaseInput>(
 	props: Omit<InputBaseProps<T>, "placeholder">,
 ) {
-	const updateTransaction = useUpdateTransaction();
+	const updateTransaction = useUpdateTransaction(props.subdirectory);
 
 	function handleSelect(data: Date | undefined) {
 		const id = props.form.watch("id" as Path<T>);
@@ -37,7 +37,10 @@ export default function DateInput<T extends BaseInput>(
 			name={props.name}
 			render={({ field }) => {
 				const value = field.value as unknown;
-				if (!(value instanceof Date)) throw new Error("Invalid value");
+				if (!(value instanceof Date))
+					throw new Error(
+						`Invalid value. Must be a date. Received: ${typeof value}`,
+					);
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
 						<FormLabel className="min-w-32 font-medium">{props.label}</FormLabel>

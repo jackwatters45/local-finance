@@ -14,12 +14,12 @@ const navItems: Array<NavItemProps> = [
 		title: "Transactions",
 	},
 	{
-		href: "/app/budgeting",
-		title: "Budgeting",
+		href: "/app/budget",
+		title: "Budget",
 	},
 	{
-		href: "/app/recurring",
-		title: "Recurring",
+		href: "/app/bills",
+		title: "Bills",
 	},
 	{
 		href: "/app/reporting",
@@ -34,7 +34,7 @@ const navItems: Array<NavItemProps> = [
 export default function Nav() {
 	return (
 		<div className="w-full border-b border-border bg-background fixed z-10">
-			<nav className="flex items-center justify-between w-full px-8 max-w-screen-2xl mx-auto">
+			<nav className="flex items-center justify-between w-full px-8 max-w-screen-2xl mx-auto lg:grid lg:grid-cols-2 lg:max-w-screen-2xl">
 				<h1 className="text-lg font-semibold">{APP_NAME_PRETTY}</h1>
 				<div>
 					{navItems.map((item) => (

@@ -6,12 +6,7 @@ import type { Path, PathValue } from "react-hook-form";
 import { Check, Delete, X } from "lucide-react";
 
 import { writeSettingsFile } from "@/lib/tauri";
-import {
-	cn,
-	getUpdatedSettingsAdd,
-	getUpdatedSettingsDelete,
-	toTitleCase,
-} from "@/lib/utils";
+import { cn, toTitleCase } from "@/lib/utils";
 import { useMirroredWidth, useUpdateTransaction } from "@/lib/hooks";
 import type { BaseInput, ConfigOption, InputBaseProps } from "@/types";
 import { settingsAtom } from "@/app/providers";
@@ -60,7 +55,7 @@ export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
 
 	const label = props.label ?? toTitleCase(props.name);
 
-	const updateTransaction = useUpdateTransaction();
+	const updateTransaction = useUpdateTransaction(props.subdirectory);
 	const handleDeleteOption = () => {
 		const id = props.form.watch("id" as Path<T>);
 
@@ -81,7 +76,9 @@ export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
 			name={props.name}
 			render={({ field }) => {
 				if (typeof field.value !== "string" && typeof field.value !== "number") {
-					throw new Error("Invalid value");
+					throw new Error(
+						`Invalid value. Must be a string or number. Received: ${typeof field.value}`,
+					);
 				}
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
@@ -143,7 +140,7 @@ export function MultiSelectInput<T extends BaseInput>(
 
 	const label = props.label ?? toTitleCase(props.name);
 
-	const updateTransaction = useUpdateTransaction();
+	const updateTransaction = useUpdateTransaction(props.subdirectory);
 	const handleDeleteOption = (option: string) => {
 		const id = props.form.watch("id" as Path<T>);
 
@@ -180,7 +177,10 @@ export function MultiSelectInput<T extends BaseInput>(
 			name={props.name}
 			render={({ field }) => {
 				const value = field.value as unknown;
-				if (!Array.isArray(value)) throw new Error("Invalid value");
+				if (!Array.isArray(value))
+					throw new Error(
+						`Invalid value. Must be an array. Received: ${typeof value}`,
+					);
 
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
@@ -257,7 +257,16 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 		if (props.options.find((o) => o.toLowerCase() === data.toLowerCase())) return;
 
 		setSettings((settings) => {
-			const newSettings = getUpdatedSettingsAdd(settings, newCategory, props.name);
+			const newSettings = {
+				...settings,
+				config: {
+					...settings.config,
+					[props.name]: [
+						...(settings.config.options[props.name] ?? []),
+						newCategory,
+					],
+				},
+			};
 
 			writeSettingsFile(newSettings);
 			return newSettings;
@@ -265,11 +274,12 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 	}
 
 	function handleClickCreateNew() {
+		if (search === "") return;
 		createNewOption(search);
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.key === "Enter") {
+		if (e.key === "Enter" && search !== "") {
 			e.preventDefault();
 			createNewOption(search);
 		}
@@ -284,11 +294,22 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 				onKeyDown={handleKeyDown}
 			/>
 			<CommandList>
-				<CommandEmpty onClick={handleClickCreateNew} className="hover:bg-accent">
-					<span className="pr-2">{`Create New ${props.label}:`}</span>
-					<Badge variant="outline">{search}</Badge>
+				<CommandEmpty
+					onClick={handleClickCreateNew}
+					className={cn(search !== "" && "hover:bg-accent")}
+				>
+					{search === "" ? (
+						<div className="text-muted-foreground h-6">No options yet...</div>
+					) : (
+						<div className="h-6">
+							<span className="pr-2">{`Create New ${props.label}:`}</span>
+							<Badge variant="outline">{search}</Badge>
+						</div>
+					)}
 				</CommandEmpty>
-				<CommandGroup>
+				<CommandGroup
+					className={cn(search === "" && !props.options.length && "p-0")}
+				>
 					{props.options.map((option) => (
 						<CommandItem
 							value={option}
@@ -314,15 +335,23 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 	);
 }
 
-function DeleteOption({
-	option,
-	label,
-	name,
-}: { option: string; label: string; name: ConfigOption }) {
+function DeleteOption(props: {
+	option: string;
+	label: string;
+	name: ConfigOption;
+}) {
 	const setSettings = useSetAtom(settingsAtom);
 	const deleteOption = (option: string) => {
 		setSettings((settings) => {
-			const newSettings = getUpdatedSettingsDelete(settings, option, name);
+			const newSettings = {
+				...settings,
+				config: {
+					...settings.config,
+					[props.name]: settings.config.options[props.name]?.filter(
+						(o) => o !== option,
+					),
+				},
+			};
 
 			writeSettingsFile(newSettings);
 			return newSettings;
@@ -342,7 +371,7 @@ function DeleteOption({
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>{`Deleting ${option} from ${label}`}</AlertDialogTitle>
+					<AlertDialogTitle>{`Deleting ${props.option} from ${props.label}`}</AlertDialogTitle>
 					<AlertDialogDescription>
 						Deleting this option will not remove it from transactions but will remove
 						it from the list of options for this field.
@@ -350,7 +379,7 @@ function DeleteOption({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction onClick={() => deleteOption(option)}>
+					<AlertDialogAction onClick={() => deleteOption(props.option)}>
 						Continue
 					</AlertDialogAction>
 				</AlertDialogFooter>

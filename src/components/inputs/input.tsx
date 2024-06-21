@@ -28,7 +28,7 @@ interface InputProps<T extends BaseInput>
 }
 
 export default function Input<T extends BaseInput>(props: InputProps<T>) {
-	const updateTransaction = useUpdateTransaction();
+	const updateTransaction = useUpdateTransaction(props.subdirectory);
 
 	const handleInputChange = useDebouncedCallback((data: string | number) => {
 		const id = props.form.watch("id" as Path<T>);
@@ -57,7 +57,10 @@ export default function Input<T extends BaseInput>(props: InputProps<T>) {
 						)}
 						<FormControl>
 							<ShadcnInput
-								className={cn("hover:bg-accent flex-1", props.className)}
+								className={cn(
+									"hover:bg-accent flex-1 border-none shadow-none",
+									props.className,
+								)}
 								placeholder={props.placeholder ?? props.label}
 								type={props.type}
 								{...field}

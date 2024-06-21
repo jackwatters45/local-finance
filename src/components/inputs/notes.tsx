@@ -19,7 +19,7 @@ type NotesInputProps<T extends NotesFields> = Omit<
 export default function NotesInput<T extends NotesFields>(
 	props: NotesInputProps<T>,
 ) {
-	const updateTransaction = useUpdateTransaction();
+	const updateTransaction = useUpdateTransaction(props.subdirectory);
 	const handleInputChange = useDebouncedCallback((data: string) => {
 		const id = props.form.watch("id" as Path<T>);
 		updateTransaction(id, { [props.name]: data });
