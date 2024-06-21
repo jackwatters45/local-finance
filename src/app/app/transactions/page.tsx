@@ -5,7 +5,8 @@ import { useEffect } from "react";
 import { nanoid } from "nanoid";
 
 import { columns } from "@/app/app/transactions/columns";
-import { readAllTransactions } from "@/lib/tauri";
+import { readAllFiles } from "@/lib/tauri";
+import type { Transaction } from "@/types";
 import {
 	settingsAtom,
 	transactionMetaAtom,
@@ -18,10 +19,11 @@ import { LoadingPage } from "@/components/ui/loading";
 import { DataTable } from "@/components/data-table/data-table";
 
 export default function Transactions() {
-	const [transactions, setTransactions] = useAtom(transactionsAtom);
 	const settings = useAtomValue(settingsAtom);
+	
+	const [transactions, setTransactions] = useAtom(transactionsAtom);
 	useEffect(() => {
-		readAllTransactions().then((transactions) => {
+		readAllFiles<Transaction>("transactions").then((transactions) => {
 			transactions.sort((a, b) => a.date.getTime() - b.date.getTime());
 
 			let runningTotal = settings.config.user.startingBalance;
@@ -40,13 +42,13 @@ export default function Transactions() {
 
 	return (
 		<>
-			<div className="space-y-4 pb-12 pt-24 ">
+			<div className="space-y-4 pb-12 pt-24">
 				<div className="flex items-center justify-between max-h-screen">
 					<h2 className="text-xl font-semibold px-8">Transactions</h2>
 					<div className="pr-2">
 						<OpenSidebarButton
 							onClick={() => setTransactionMeta({ id: nanoid(), isNew: true })}
-              sidebarContent={<TransactionDetails />}
+							sidebarContent={<TransactionDetails />}
 						/>
 					</div>
 				</div>

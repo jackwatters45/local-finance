@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import { deleteDataFile } from "@/lib/tauri";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { MoreHorizontal } from "lucide-react";
 
-import type { Transaction } from "@/types";
+import type { Budget } from "@/types";
+import { MoreHorizontal } from "lucide-react";
+import { settingsAtom, budgetMetaAtom, budgetsAtom } from "../../providers";
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -21,11 +22,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Form } from "@/components/ui/form";
-import {
-	settingsAtom,
-	transactionMetaAtom,
-	transactionsAtom,
-} from "../../providers";
 import Input from "../../../components/inputs/input";
 import DateInput from "../../../components/inputs/date";
 import NotesInput from "../../../components/inputs/notes";
@@ -34,7 +30,7 @@ import {
 	MultiSelectInput,
 } from "../../../components/inputs/select";
 
-export const transactionFormSchema = z.object({
+export const budgetFormSchema = z.object({
 	id: z.string(),
 	name: z.string().min(2, {
 		message: "Name must be at least 2 characters.",
@@ -42,43 +38,35 @@ export const transactionFormSchema = z.object({
 	date: z.date(),
 	amount: z.number(),
 	category: z.string(),
-	company: z.string(),
 	tags: z.array(z.string()),
 	recurring: z.boolean(),
 	notes: z.string(),
-	runningTotal: z.number(),
 });
 
-export const getDefaultTransaction = (
-	transaction: Partial<Transaction> | null,
-): Transaction => ({
-	id: transaction?.id ?? nanoid(),
-	name: transaction?.name ?? "",
-	date: transaction?.date ? new Date(transaction.date) : new Date(),
-	amount: transaction?.amount ?? 0,
-	category: transaction?.category ?? "",
-	company: transaction?.company ?? "",
-	tags: transaction?.tags ?? [],
-	recurring: transaction?.recurring ?? false,
-	notes: transaction?.notes ?? "",
-	runningTotal: transaction?.runningTotal ?? 0,
+export const getDefaultBudget = (budget: Partial<Budget> | null): Budget => ({
+	id: budget?.id ?? nanoid(),
+	name: budget?.name ?? "",
+	date: budget?.date ? new Date(budget.date) : new Date(),
+	amount: budget?.amount ?? 0,
+	category: budget?.category ?? "",
+	tags: budget?.tags ?? [],
+	recurring: budget?.recurring ?? false,
+	notes: budget?.notes ?? "",
 });
 
-// TODO add some focused bg for inputs
-// TODO select + multi select (tags + categories)
-export default function TransactionForm({
-	transaction,
-}: { transaction: Partial<Transaction> | null }) {
+export default function BudgetItemForm({
+	budget,
+}: { budget: Partial<Budget> | null }) {
 	const settings = useAtomValue(settingsAtom);
 
-	const form = useForm<z.infer<typeof transactionFormSchema>>({
-		resolver: zodResolver(transactionFormSchema),
-		defaultValues: getDefaultTransaction(transaction),
+	const form = useForm<z.infer<typeof budgetFormSchema>>({
+		resolver: zodResolver(budgetFormSchema),
+		defaultValues: getDefaultBudget(budget),
 	});
 
 	React.useEffect(() => {
-		form.reset(getDefaultTransaction(transaction));
-	}, [transaction, form]);
+		form.reset(getDefaultBudget(budget));
+	}, [budget, form]);
 
 	return (
 		<Form {...form}>
@@ -88,11 +76,11 @@ export default function TransactionForm({
 						<Input
 							form={form}
 							name="name"
-							placeholder="Transaction Name"
+							placeholder="Budget Name"
 							label="Name"
 							className="w-full text-xl flex-1 font-semibold -translate-x-4"
 							omitLabel={true}
-							subdirectory="transactions"
+							subdirectory="budgets"
 						/>
 						<div className="pl-4 lg:pr-8">
 							<MoreOptionsDropdown form={form} />
@@ -104,38 +92,26 @@ export default function TransactionForm({
 							name="amount"
 							type="number"
 							label="Amount"
-							subdirectory="transactions"
+							subdirectory="budgets"
 						/>
-						<DateInput
-							form={form}
-							name="date"
-							label="Date"
-							subdirectory="transactions"
-						/>
+						<DateInput form={form} name="date" label="Date" subdirectory="budgets" />
 						<SelectInput
 							form={form}
 							name="category"
 							label="Category"
 							options={settings.config.options.category ?? []}
-							subdirectory="transactions"
-						/>
-						<SelectInput
-							form={form}
-							name="company"
-							label="Company"
-							options={settings.config.options.company ?? []}
-							subdirectory="transactions"
+							subdirectory="budgets"
 						/>
 						<MultiSelectInput
 							form={form}
 							name="tags"
 							label="Tags"
 							options={settings.config.options.tags ?? []}
-							subdirectory="transactions"
+							subdirectory="budgets"
 						/>
 					</div>
 					<Separator />
-					<NotesInput form={form} name="notes" subdirectory="transactions" />
+					<NotesInput form={form} name="notes" subdirectory="budgets" />
 				</div>
 			</form>
 		</Form>
@@ -144,19 +120,19 @@ export default function TransactionForm({
 
 function MoreOptionsDropdown({
 	form,
-}: { form: UseFormReturn<z.infer<typeof transactionFormSchema>> }) {
-	const setTransactions = useSetAtom(transactionsAtom);
-	const setTransactionMeta = useSetAtom(transactionMetaAtom);
+}: { form: UseFormReturn<z.infer<typeof budgetFormSchema>> }) {
+	const setBudgets = useSetAtom(budgetsAtom);
+	const setBudgetMeta = useSetAtom(budgetMetaAtom);
 	const handleDelete = () => {
 		const id = form.watch("id");
 
-		setTransactionMeta({ id: nanoid(), isNew: true });
+		setBudgetMeta({ id: nanoid(), isNew: true });
 
-		setTransactions((transactions) => {
-			return transactions.filter((transaction) => transaction.id !== id);
+		setBudgets((budgets) => {
+			return budgets.filter((budget) => budget.id !== id);
 		});
 
-		deleteDataFile("transactions", `${id}.json`);
+		deleteDataFile("budgets", `${id}.json`);
 	};
 
 	return (

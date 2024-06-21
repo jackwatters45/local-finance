@@ -4,16 +4,16 @@ import { useSetAtom } from "jotai";
 import { MoreVertical } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import TransactionDetails from "./details";
-import { transactionMetaAtom } from "../../providers";
+import BudgetDetails from "./details";
+import { budgetMetaAtom } from "../../providers";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { Button } from "@/components/ui/button";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import type { Transaction } from "@/types";
+import type { Budget } from "@/types";
 
-export const columns: ColumnDef<Transaction>[] = [
+export const columns: ColumnDef<Budget>[] = [
 	{
 		accessorKey: "date",
 		header: ({ column }) => (
@@ -39,12 +39,7 @@ export const columns: ColumnDef<Transaction>[] = [
 			<DataTableColumnHeader column={column} title="Amount" />
 		),
 	},
-	{
-		accessorKey: "runningTotal",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Total" />
-		),
-	},
+
 	{
 		id: "open",
 		cell: ({ row }) => <OpenMenu id={row.id} />,
@@ -52,7 +47,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 function OpenMenu({ id }: { id: string }) {
-	const setTransactionMeta = useSetAtom(transactionMetaAtom);
+	const setBudgetMeta = useSetAtom(budgetMetaAtom);
 
 	return (
 		<>
@@ -60,7 +55,7 @@ function OpenMenu({ id }: { id: string }) {
 				<Button
 					variant="ghost"
 					className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 hidden lg:flex"
-					onClick={() => setTransactionMeta({ id })}
+					onClick={() => setBudgetMeta({ id })}
 				>
 					<span className="sr-only">Open menu</span>
 					<MoreVertical className="h-4 w-4" />
@@ -71,14 +66,14 @@ function OpenMenu({ id }: { id: string }) {
 						<Button
 							variant="ghost"
 							className="h-8 w-8 p-0 rounded-full border border-transparent hover:border-border focus-visible:right-0 lg:hidden"
-							onClick={() => setTransactionMeta({ id })}
+							onClick={() => setBudgetMeta({ id })}
 						>
 							<span className="sr-only">Open menu</span>
 							<MoreVertical className="h-4 w-4" />
 						</Button>
 					</SheetTrigger>
 					<SheetContent className="w-[400px] sm:w-[540px]">
-						<TransactionDetails />
+						<BudgetDetails />
 					</SheetContent>
 				</Sheet>
 			</div>

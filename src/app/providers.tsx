@@ -3,32 +3,41 @@
 import type * as React from "react";
 import { ThemeProvider } from "next-themes";
 import { atom, Provider as JotaiProvider } from "jotai";
-import type { Settings, Transaction } from "@/types";
+import type { Bill, Budget, Settings, Transaction } from "@/types";
 import { nanoid } from "nanoid";
-import { CATEGORIES } from "../lib/constants";
-
-export const transactionMetaAtom = atom<{ id: string | null; isNew?: boolean }>(
-	{
-		id: nanoid(),
-		isNew: true,
-	},
-);
+import { DEFAULT_CATEGORIES } from "../lib/constants";
 
 export const settingsAtom = atom<Settings>({
-	theme: "system",
-	baseDirectory: "",
-	appDirectory: "",
-
 	config: {
 		user: {
 			isOnboarded: false,
 			startingBalance: 0,
 		},
 		options: {
-			category: CATEGORIES,
+			category: DEFAULT_CATEGORIES,
+			company: [],
 			tags: [],
 		},
 	},
+});
+
+type MetaAtom = { id: string; isNew?: boolean };
+
+export const budgetMetaAtom = atom<MetaAtom>({
+	id: nanoid(),
+	isNew: true,
+});
+export const budgetsAtom = atom<Budget[]>([]);
+
+export const billMetaAtom = atom<MetaAtom>({
+	id: nanoid(),
+	isNew: true,
+});
+export const billsAtom = atom<Bill[]>([]);
+
+export const transactionMetaAtom = atom<MetaAtom>({
+	id: nanoid(),
+	isNew: true,
 });
 
 export const transactionsAtom = atom<Transaction[]>([]);
