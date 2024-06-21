@@ -2,24 +2,21 @@
 
 ## TODO
 
+- delete - reset current transaction
+
 - commits
 
-- onboarding page
-- settings should look pretty similar to the onboarding page
+- recurring field
 
-- net worth - currently wrong ...
-
-- other pages - combine a few pages where logical (all similar format to transactions!!!!)
-
-  - IOUs + Expected
-  - Goal tracking
-  - footer pages -> just text etc - not docs or anything
-  - add a contact thing for recs or whatever
-
-- should index just be a redirect / onboarding page? onboarding logic.
+- other pages
+  - new pages (budget, bill)
+    - how to include budgets and bills in transactions
+  - IOUs + Expected (budget)
+  - Goal tracking (budget)
 
 - misc
   
+  - number formatting (0.00) + starts 0
   - negative values
   - details page
   - Nav -> hamburger or icons
@@ -32,6 +29,10 @@
   - default number
   - badge styling
 
+- net worth - currently wrong ...
+
+  - add order field that counts order created - 1, 2, 3, etc
+
 Table
 
 - initial load - start by loading enough to show the first page -> load more
@@ -42,6 +43,7 @@ Table
 - add lines between columns??
 - style table better
 - sort
+- navigate by using up and down arrows on the keyboard
 
 - test
   - add a few thousand transactions
@@ -49,6 +51,8 @@ Table
 
 - Publish
 
+  - footer pages -> just text etc - not docs or anything
+  - add a contact thing for recs or whatever
   - build
   - create home page
   - make downloadable
@@ -57,13 +61,13 @@ Table
 
 ## Roadmap
 
-- would really prefer to create a folder for settings instead of a single file
 - allow users to edit from the table
   - input concurency becomes a problem
-- switch to vite + react compiler + react query(no reason to use next rn)
+- switch to vite + react compiler + react query (no reason to use next rn)
 - ai integration - categories etc
 - export + import data
 - implement add/delete fields
+- improve nav / potentially title bar
 
 ## System design stuff
 
