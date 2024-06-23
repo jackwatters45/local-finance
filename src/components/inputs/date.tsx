@@ -43,7 +43,9 @@ export default function DateInput<T extends BaseInput>(
 					);
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
-						<FormLabel className="min-w-32 font-medium">{props.label}</FormLabel>
+						<FormLabel className="min-w-32 font-medium h-full flex items-center">
+							{props.label}
+						</FormLabel>
 						<Popover>
 							<PopoverTrigger asChild>
 								<FormControl>
@@ -62,9 +64,11 @@ export default function DateInput<T extends BaseInput>(
 								<Calendar
 									mode="single"
 									selected={value}
-									onSelect={(e) => {
-										field.onChange(e);
-										handleSelect(e);
+									onSelect={(value) => {
+										field.onChange(value);
+
+										if (props.handleChange) props.handleChange(value);
+										else handleSelect(value);
 									}}
 									initialFocus
 								/>

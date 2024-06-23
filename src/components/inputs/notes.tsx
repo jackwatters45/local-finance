@@ -36,8 +36,10 @@ export default function NotesInput<T extends NotesFields>(
 							placeholder="Notes..."
 							{...field}
 							onChange={(e) => {
-								handleInputChange(e.target.value);
 								field.onChange(e.target.value);
+
+								if (props.handleChange) props.handleChange(e.target.value);
+								else handleInputChange(e.target.value);
 							}}
 						/>
 					</FormControl>

@@ -18,58 +18,55 @@ import { Input as ShadcnInput } from "@/components/ui/input";
 
 interface InputProps<T extends BaseInput>
 	extends InputBaseProps<T>,
-		Omit<React.InputHTMLAttributes<HTMLInputElement>, "form" | "name" | "type"> {
-	omitLabel?: boolean;
-	type?: "text" | "number";
-}
+		Omit<React.InputHTMLAttributes<HTMLInputElement>, "form" | "name"> {}
 
 export default function Input<T extends BaseInput>(props: InputProps<T>) {
 	const writeInputToFile = useWriteInputToFile(props.subdirectory);
 
-	const handleInputChange = useDebouncedCallback((data: string | number) => {
-		const id = props.form.watch("id" as Path<T>);
-		writeInputToFile(id, { [props.name]: data });
-	}, 300);
+	const handleInputChange = useDebouncedCallback(
+		(data: string | number | null) => {
+			const id = props.form.watch("id" as Path<T>);
+			writeInputToFile(id, { [props.name]: data });
+		},
+		300,
+	);
 
 	return (
 		<FormField
 			control={props.form.control}
 			name={props.name}
 			render={({ field }) => {
-				if (!props.type && typeof field.value !== "string") {
+				if (typeof field.value !== "string") {
 					throw new Error(
-						`Input must be a string when type is not specified. Received: ${typeof field.value}`,
+						`Input must be a string . Received: ${typeof field.value} ${JSON.stringify(field.value)}}`,
 					);
 				}
-				if (props.type === "number" && typeof field.value !== "number") {
-					throw new Error(
-						`Invalid must be a number when type is number. Received: ${typeof field.value}`,
-					);
-				}
+
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
-						{!props.omitLabel && (
-							<FormLabel className="min-w-32 font-medium">{props.label}</FormLabel>
+						{props.label && (
+							<FormLabel className="min-w-32 font-medium h-full flex items-center">
+								{props.label}
+							</FormLabel>
 						)}
 						<FormControl>
 							<ShadcnInput
+								placeholder={props.placeholder ?? "Empty"}
+								type={props.type}
+								{...field}
+								value={field.value ? field.value : ""}
+								onChange={(e) => {
+									const value = e.target.value;
+
+									field.onChange(value);
+
+									if (props.handleChange) props.handleChange(value);
+									else handleInputChange(value);
+								}}
 								className={cn(
 									"hover:bg-accent flex-1 border-none shadow-none",
 									props.className,
 								)}
-								placeholder={props.placeholder ?? props.label}
-								type={props.type}
-								{...field}
-								value={field.value}
-								onChange={(e) => {
-									const value =
-										props.type === "number"
-											? Number.parseFloat(e.target.value)
-											: e.target.value;
-
-									field.onChange(value);
-									handleInputChange(value);
-								}}
 							/>
 						</FormControl>
 					</FormItem>
