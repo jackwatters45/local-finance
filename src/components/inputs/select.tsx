@@ -43,9 +43,73 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../ui/select";
+import type { SelectTriggerProps } from "../ui/select";
 
 interface SelectInputProps<T extends BaseInput> extends InputBaseProps<T> {
 	options: Array<string>;
+	triggerProps?: SelectTriggerProps;
+}
+
+export function BasicSelectInput<T extends BaseInput>(
+	props: SelectInputProps<T>,
+) {
+	const writeInputToFile = useWriteInputToFile(props.subdirectory);
+	const handleValueChange = (data: string) => {
+		const id = props.form.watch("id" as Path<T>);
+
+		writeInputToFile(id, { [props.name]: data });
+		props.form.setValue(props.name, data as PathValue<T, Path<T>>);
+	};
+
+	return (
+		<FormField
+			control={props.form.control}
+			name={props.name}
+			render={({ field }) => {
+				return (
+					<FormItem className="flex items-center text-sm h-10 space-y-0">
+						{props.label && (
+							<FormLabel className="min-w-32 font-medium h-full flex items-center">
+								{props.label}
+							</FormLabel>
+						)}
+						<Select
+							onValueChange={(value) => {
+								field.onChange(value);
+
+								if (props.handleChange) props.handleChange(value);
+								else handleValueChange(value);
+							}}
+							defaultValue={field.value ?? undefined}
+						>
+							<FormControl>
+								<SelectTrigger
+									className="border-none shadow-none ring-0 focus-visible:ring-0 focus:ring-0 hover:bg-accent"
+									{...props.triggerProps}
+								>
+									<SelectValue placeholder={props.placeholder ?? "Empty"} />
+								</SelectTrigger>
+							</FormControl>
+							<SelectContent>
+								{props.options.map((option) => (
+									<SelectItem key={option} value={option}>
+										{toTitleCase(option)}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</FormItem>
+				);
+			}}
+		/>
+	);
 }
 
 export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
@@ -82,7 +146,9 @@ export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
 				}
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
-						<FormLabel className="min-w-32 font-medium">{label}</FormLabel>
+						<FormLabel className="min-w-32 font-medium h-full flex items-center">
+							{label}
+						</FormLabel>
 						<Popover open={open} onOpenChange={setOpen}>
 							<PopoverTrigger asChild>
 								<FormControl>
@@ -109,7 +175,7 @@ export function SelectInput<T extends BaseInput>(props: SelectInputProps<T>) {
 												/>
 											</Badge>
 										) : (
-											`Select ${label}`
+											props.placeholder ?? "Empty"
 										)}
 									</Button>
 								</FormControl>
@@ -184,7 +250,9 @@ export function MultiSelectInput<T extends BaseInput>(
 
 				return (
 					<FormItem className="flex items-center text-sm h-10 space-y-0">
-						<FormLabel className="min-w-32 font-medium">{props.label}</FormLabel>
+						<FormLabel className="min-w-32 font-medium h-full flex items-center">
+							{props.label}
+						</FormLabel>
 						<Popover open={open} onOpenChange={setOpen}>
 							<PopoverTrigger asChild>
 								<FormControl>
@@ -214,7 +282,7 @@ export function MultiSelectInput<T extends BaseInput>(
 															/>
 														</Badge>
 													))
-												: `Select ${props.label}`}
+												: props.placeholder ?? "Empty"}
 										</div>
 									</Button>
 								</FormControl>
@@ -326,7 +394,7 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 								)}
 							/>
 							<span className="flex-1">{option}</span>
-							<DeleteOption option={option} label={props.label} name={props.name} />
+							<DeleteOption option={option} name={props.name} />
 						</CommandItem>
 					))}
 				</CommandGroup>
@@ -337,7 +405,6 @@ function SelectCommand<T extends BaseInput>(props: SelectCommandProps<T>) {
 
 function DeleteOption(props: {
 	option: string;
-	label: string;
 	name: ConfigOption;
 }) {
 	const setSettings = useSetAtom(settingsAtom);
@@ -371,7 +438,7 @@ function DeleteOption(props: {
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>{`Deleting ${props.option} from ${props.label}`}</AlertDialogTitle>
+					<AlertDialogTitle>{`Deleting ${props.option} from ${toTitleCase(props.name)}`}</AlertDialogTitle>
 					<AlertDialogDescription>
 						Deleting this option will not remove it from transactions but will remove
 						it from the list of options for this field.
