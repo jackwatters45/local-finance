@@ -31,7 +31,7 @@ import {
 } from "../../../components/inputs/select";
 import { getDefaultBudget } from "@/lib/utils";
 import { scheduleSchema } from "@/lib/shared";
-import NumberInput from "@/components/inputs/number";
+import MoneyInput from "@/components/inputs/money";
 
 export const budgetFormSchema = z.object({
 	id: z.string(),
@@ -39,7 +39,7 @@ export const budgetFormSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.number().nullable(),
+	amount: z.string().nullable(),
 	category: z.string(),
 	tags: z.array(z.string()),
 	schedule: scheduleSchema.nullable(),
@@ -77,7 +77,7 @@ export default function BudgetItemForm({
 						</div>
 					</div>
 					<div>
-						<NumberInput
+						<MoneyInput
 							form={form}
 							name="amount"
 							label="Amount"

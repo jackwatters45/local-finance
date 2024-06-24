@@ -14,7 +14,7 @@ export type Transaction = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number | null;
+	amount: string | null;
 	category: string; // TODO
 	company: string;
 	tags: string[]; // TODO
@@ -28,7 +28,7 @@ export type Budget = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number | null;
+	amount: string | null;
 	category: string;
 	tags: string[];
 	schedule: Schedule | null;
@@ -39,7 +39,7 @@ export type Bill = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number | null;
+	amount: string | null;
 	category: string;
 	company: string;
 	tags: string[];

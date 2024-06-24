@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { Bill } from "@/types";
+import { moneyFormatter } from "@/lib/utils";
 
 export const columns: ColumnDef<Bill>[] = [
 	{
@@ -36,9 +37,8 @@ export const columns: ColumnDef<Bill>[] = [
 			<DataTableColumnHeader column={column} title="Amount" />
 		),
 		cell: ({ row }) => {
-			const amount = row.getValue<string | number>("amount");
-			if (amount === "") return null;
-			return amount;
+			const amount = row.getValue<string | null>("amount");
+			return amount ? moneyFormatter.format(Number.parseFloat(amount)) : null;
 		},
 	},
 

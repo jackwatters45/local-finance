@@ -2,14 +2,9 @@
 
 ## TODO
 
-- see number input delete + show zeros (type zero in amt)
-- number formatting (0.00) + starts 0 + negative values
-
 - recurring logic (actually creating the new items)
   - cron job - look through all dates and create new items but need a way to track which one come from the same parent transaction ie scheduleId
     - well not a cron job - just on boot i guess or figure out an event
-
-- commits
 
 ---
 
@@ -67,6 +62,7 @@ Table
 
 ## Roadmap
 
+- allow different currencies (really just about , vs .)
 - improve nav / potentially title bar
 - allow users to edit from the table
   - input concurency becomes a problem

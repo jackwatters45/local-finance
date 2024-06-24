@@ -30,13 +30,17 @@ export const hyphenToTitleCase = (str: string): string =>
 export const toHyphenCase = (str: string): string =>
 	str.toLowerCase().split(" ").join("-");
 
+type TransactionWithNum = Omit<Transaction, "amount"> & {
+	amount: number | null;
+};
+
 export const getDefaultTransaction = (
 	transaction: Partial<Transaction> | null,
-): Transaction => ({
+): TransactionWithNum => ({
 	id: transaction?.id ?? nanoid(),
 	name: transaction?.name ?? "",
 	date: transaction?.date ?? new Date(),
-	amount: transaction?.amount ?? null,
+	amount: transaction?.amount ? Number.parseFloat(transaction.amount) : null,
 	category: transaction?.category ?? "",
 	company: transaction?.company ?? "",
 	tags: transaction?.tags ?? [],
@@ -96,3 +100,10 @@ export function getNextScheduledDate(
 
 	return nextDate;
 }
+
+export const moneyFormatter = Intl.NumberFormat("en-ES", {
+	currency: "USD",
+	currencySign: "accounting",
+	minimumFractionDigits: 2,
+	minimumIntegerDigits: 1,
+});

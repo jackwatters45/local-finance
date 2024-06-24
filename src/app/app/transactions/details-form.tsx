@@ -38,7 +38,7 @@ import { getDefaultTransaction } from "@/lib/utils";
 import { SCHEDULE_OPTIONS } from "@/lib/constants";
 import ScheduledInput from "@/components/inputs/scheduled";
 import { scheduleSchema } from "@/lib/shared";
-import NumberInput from "@/components/inputs/number";
+import MoneyInput from "@/components/inputs/money";
 
 export const transactionFormSchema = z.object({
 	id: z.string(),
@@ -46,7 +46,10 @@ export const transactionFormSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.number().nullable(),
+	amount: z
+		.string()
+		.nullable()
+		.transform((val) => (val ? Number.parseFloat(val) : null)),
 	category: z.string(),
 	company: z.string(),
 	tags: z.array(z.string()),
@@ -88,7 +91,7 @@ export default function TransactionForm({
 						</div>
 					</div>
 					<div>
-						<NumberInput
+						<MoneyInput
 							form={form}
 							name="amount"
 							label="Amount"

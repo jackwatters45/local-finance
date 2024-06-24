@@ -38,7 +38,7 @@ export default function Input<T extends BaseInput>(props: InputProps<T>) {
 			render={({ field }) => {
 				if (typeof field.value !== "string") {
 					throw new Error(
-						`Input must be a string . Received: ${typeof field.value} ${JSON.stringify(field.value)}}`,
+						`Input must be a string. Received: ${typeof field.value} ${JSON.stringify(field.value)}}`,
 					);
 				}
 

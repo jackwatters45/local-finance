@@ -28,7 +28,7 @@ export default function Transactions() {
 
 			let runningTotal = settings.config.user.startingBalance;
 			for (const transaction of transactions) {
-				runningTotal = runningTotal + (transaction.amount ?? 0);
+				runningTotal = runningTotal + Number.parseFloat(transaction.amount ?? "0");
 				transaction.runningTotal = runningTotal;
 			}
 
