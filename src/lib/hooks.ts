@@ -10,10 +10,8 @@ import {
 	transactionMetaAtom,
 	transactionsAtom,
 } from "@/app/providers";
-import { getDefaultTransaction } from "@/app/app/transactions/details-form";
 import type { Bill, Budget, Subdirectory, Transaction } from "@/types";
-import { getDefaultBill } from "@/app/app/bills/details-form";
-import { getDefaultBudget } from "@/app/app/budget/details-form";
+import { getDefaultBill, getDefaultBudget, getDefaultTransaction } from "./utils";
 
 export function useMirroredWidth(): [React.RefObject<HTMLElement>, number] {
 	const ref = React.useRef<HTMLElement>(null);

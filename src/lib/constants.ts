@@ -1,14 +1,10 @@
-import type { Settings } from "@/types";
+import type { Schedule, Settings } from "@/types";
 
 export const APP_NAME = "local-finance";
-export const APP_NAME_PRETTY = "Local Finance";
+export const APP_NAME_PRETTY = "Finance Notebook";
 
 export const SETTINGS_FILE = ".settings.json";
-export const SUBDIRECTORIES = [
-	"transactions",
-	"bills",
-	"budgets",
-] as const;
+export const SUBDIRECTORIES = ["transactions", "bills", "budgets"] as const;
 
 export const BASE_DIRECTORY = "AppConfig";
 export const APP_DIRECTORY = `${APP_NAME_PRETTY} Vault`;
@@ -32,6 +28,9 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 export const DEFAULT_TAGS = ["Important", "Review Later"];
+
+export const SCHEDULE_OPTIONS = ["days", "weeks", "months", "years"];
+export const DEFAULT_SCHEDULE: Schedule = { num: 1, range: "weeks" };
 
 export const DEFAULT_SETTINGS: Settings = {
 	config: {
@@ -60,4 +59,3 @@ export const RESET_SETTINGS: Settings = {
 		},
 	},
 };
-
