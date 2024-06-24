@@ -3,15 +3,22 @@ import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export type Subdirectory = (typeof SUBDIRECTORIES)[number];
 
+export type ScheduledOptions = "days" | "weeks" | "months" | "years";
+
+export type Schedule = {
+	num: number | null;
+	range: ScheduledOptions | null;
+};
+
 export type Transaction = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number;
+	amount: number | null;
 	category: string; // TODO
 	company: string;
 	tags: string[]; // TODO
-	recurring: boolean;
+	schedule: Schedule | null;
 	notes: string;
 	runningTotal: number;
 	// history: string; // TODO
@@ -21,10 +28,10 @@ export type Budget = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number;
+	amount: number | null;
 	category: string;
 	tags: string[];
-	recurring: boolean;
+	schedule: Schedule | null;
 	notes: string;
 };
 
@@ -32,11 +39,11 @@ export type Bill = {
 	id: string;
 	date: Date;
 	name: string;
-	amount: number;
+	amount: number | null;
 	category: string;
 	company: string;
 	tags: string[];
-	recurring: boolean;
+	schedule: Schedule | null;
 	notes: string;
 };
 
@@ -68,7 +75,8 @@ export type BaseInput = { id: string } & FieldValues;
 export type InputBaseProps<T extends BaseInput> = {
 	form: UseFormReturn<T>;
 	name: Path<T>;
-	label: string;
+	label?: string;
 	placeholder?: string;
 	subdirectory: Subdirectory;
+	handleChange?: (data: unknown, field?: unknown) => void;
 };

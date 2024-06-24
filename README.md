@@ -1,35 +1,37 @@
-# Local Finance
+# Finance Notebook
 
 ## TODO
 
-- delete - reset current transaction
+- see number input delete + show zeros (type zero in amt)
+- number formatting (0.00) + starts 0 + negative values
+
+- recurring logic (actually creating the new items)
+  - cron job - look through all dates and create new items but need a way to track which one come from the same parent transaction ie scheduleId
+    - well not a cron job - just on boot i guess or figure out an event
 
 - commits
 
-- hook is wrong - not generic rn
+---
 
-- recurring field
+- add type - bill | transaction?
 
-- other pages
-  - new pages (budget, bill)
-    - how to include budgets and bills in transactions
-  - IOUs + Expected (budget)
-  - Goal tracking (budget)
+- Budgets
+  - IOUs + Expected
+  - How to do goal tracking
+
+- Notes page -> markdown editor
+
+---
 
 - misc
   
-  - number formatting (0.00) + starts 0
-  - negative values
-  - details page
   - Nav -> hamburger or icons
   - style all shadcn ui
   - better name
   - color scheme - dark mode similar to obsidian / lax talk (lighter dark mode)
-  - logo
-  - check out other fonts
   - muted text color for nav + footer + placeholders + etc
-  - default number
-  - badge styling
+
+---
 
 - net worth - currently wrong ...
 
@@ -53,6 +55,7 @@ Table
 
 - Publish
 
+  - logo
   - footer pages -> just text etc - not docs or anything
   - add a contact thing for recs or whatever
   - build
@@ -60,17 +63,14 @@ Table
   - make downloadable
   - add to portfolio + yats
   - Blog post
+  - Readme
 
 ## Roadmap
 
+- improve nav / potentially title bar
 - allow users to edit from the table
   - input concurency becomes a problem
 - switch to vite + react compiler + react query (no reason to use next rn)
 - ai integration - categories etc
 - export + import data
-- implement add/delete fields
-- improve nav / potentially title bar
-
-## System design stuff
-
-Make a system design document for the app + my other similar designs
+- Create new fields

@@ -38,7 +38,7 @@ export default function Index() {
 
 			let runningTotal = settings.config.user.startingBalance;
 			for (const transaction of transactions) {
-				runningTotal = runningTotal + transaction.amount;
+				runningTotal = runningTotal + (transaction.amount ?? 0);
 				transaction.runningTotal = runningTotal;
 			}
 

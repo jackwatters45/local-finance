@@ -20,7 +20,7 @@ import { DataTable } from "@/components/data-table/data-table";
 
 export default function Transactions() {
 	const settings = useAtomValue(settingsAtom);
-	
+
 	const [transactions, setTransactions] = useAtom(transactionsAtom);
 	useEffect(() => {
 		readAllFiles<Transaction>("transactions").then((transactions) => {
@@ -28,7 +28,7 @@ export default function Transactions() {
 
 			let runningTotal = settings.config.user.startingBalance;
 			for (const transaction of transactions) {
-				runningTotal = runningTotal + transaction.amount;
+				runningTotal = runningTotal + (transaction.amount ?? 0);
 				transaction.runningTotal = runningTotal;
 			}
 

@@ -29,6 +29,9 @@ import {
 	SelectInput,
 	MultiSelectInput,
 } from "../../../components/inputs/select";
+import { getDefaultBill } from "@/lib/utils";
+import { scheduleSchema } from "@/lib/shared";
+import NumberInput from "@/components/inputs/number";
 
 export const billFormSchema = z.object({
 	id: z.string(),
@@ -36,23 +39,11 @@ export const billFormSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.number(),
+	amount: z.number().nullable(),
 	category: z.string(),
 	tags: z.array(z.string()),
-	recurring: z.boolean(),
+	schedule: scheduleSchema.nullable(),
 	notes: z.string(),
-});
-
-export const getDefaultBill = (bill: Partial<Bill> | null): Bill => ({
-	id: bill?.id ?? nanoid(),
-	name: bill?.name ?? "",
-	date: bill?.date ? new Date(bill.date) : new Date(),
-	amount: bill?.amount ?? 0,
-	category: bill?.category ?? "",
-	company: bill?.company ?? "",
-	tags: bill?.tags ?? [],
-	recurring: bill?.recurring ?? false,
-	notes: bill?.notes ?? "",
 });
 
 export default function BillItemForm({ bill }: { bill: Partial<Bill> | null }) {
@@ -75,10 +66,8 @@ export default function BillItemForm({ bill }: { bill: Partial<Bill> | null }) {
 						<Input
 							form={form}
 							name="name"
-							placeholder="Bill Name"
-							label="Name"
+							placeholder="Untitled Bill"
 							className="w-full text-xl flex-1 font-semibold -translate-x-4"
-							omitLabel={true}
 							subdirectory="bills"
 						/>
 						<div className="pl-4 lg:pr-8">
@@ -86,10 +75,9 @@ export default function BillItemForm({ bill }: { bill: Partial<Bill> | null }) {
 						</div>
 					</div>
 					<div>
-						<Input
+						<NumberInput
 							form={form}
 							name="amount"
-							type="number"
 							label="Amount"
 							subdirectory="bills"
 						/>

@@ -21,10 +21,7 @@ export const columns: ColumnDef<Transaction>[] = [
 		),
 		cell: ({ row }) => {
 			const date = new Date(row.getValue<Date>("date"));
-
-			const dateString = date.toLocaleDateString();
-
-			return <p>{dateString}</p>;
+			return date.toLocaleDateString();
 		},
 	},
 	{
@@ -38,6 +35,11 @@ export const columns: ColumnDef<Transaction>[] = [
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Amount" />
 		),
+		cell: ({ row }) => {
+			const amount = row.getValue<string | number>("amount");
+			if (amount === "") return null;
+			return amount;
+		},
 	},
 	{
 		accessorKey: "runningTotal",

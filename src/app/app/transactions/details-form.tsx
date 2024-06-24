@@ -32,7 +32,13 @@ import NotesInput from "../../../components/inputs/notes";
 import {
 	SelectInput,
 	MultiSelectInput,
+	BasicSelectInput,
 } from "../../../components/inputs/select";
+import { getDefaultTransaction } from "@/lib/utils";
+import { SCHEDULE_OPTIONS } from "@/lib/constants";
+import ScheduledInput from "@/components/inputs/scheduled";
+import { scheduleSchema } from "@/lib/shared";
+import NumberInput from "@/components/inputs/number";
 
 export const transactionFormSchema = z.object({
 	id: z.string(),
@@ -40,28 +46,13 @@ export const transactionFormSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.number(),
+	amount: z.number().nullable(),
 	category: z.string(),
 	company: z.string(),
 	tags: z.array(z.string()),
-	recurring: z.boolean(),
+	schedule: scheduleSchema.nullable(),
 	notes: z.string(),
 	runningTotal: z.number(),
-});
-
-export const getDefaultTransaction = (
-	transaction: Partial<Transaction> | null,
-): Transaction => ({
-	id: transaction?.id ?? nanoid(),
-	name: transaction?.name ?? "",
-	date: transaction?.date ? new Date(transaction.date) : new Date(),
-	amount: transaction?.amount ?? 0,
-	category: transaction?.category ?? "",
-	company: transaction?.company ?? "",
-	tags: transaction?.tags ?? [],
-	recurring: transaction?.recurring ?? false,
-	notes: transaction?.notes ?? "",
-	runningTotal: transaction?.runningTotal ?? 0,
 });
 
 // TODO add some focused bg for inputs
@@ -88,10 +79,8 @@ export default function TransactionForm({
 						<Input
 							form={form}
 							name="name"
-							placeholder="Transaction Name"
-							label="Name"
+							placeholder="Untitled Transaction"
 							className="w-full text-xl flex-1 font-semibold -translate-x-4"
-							omitLabel={true}
 							subdirectory="transactions"
 						/>
 						<div className="pl-4 lg:pr-8">
@@ -99,10 +88,9 @@ export default function TransactionForm({
 						</div>
 					</div>
 					<div>
-						<Input
+						<NumberInput
 							form={form}
 							name="amount"
-							type="number"
 							label="Amount"
 							subdirectory="transactions"
 						/>
@@ -131,6 +119,13 @@ export default function TransactionForm({
 							name="tags"
 							label="Tags"
 							options={settings.config.options.tags ?? []}
+							subdirectory="transactions"
+						/>
+						<ScheduledInput
+							form={form}
+							name="schedule"
+							label="Schedule"
+							options={SCHEDULE_OPTIONS}
 							subdirectory="transactions"
 						/>
 					</div>

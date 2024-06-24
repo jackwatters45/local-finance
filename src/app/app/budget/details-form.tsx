@@ -29,6 +29,9 @@ import {
 	SelectInput,
 	MultiSelectInput,
 } from "../../../components/inputs/select";
+import { getDefaultBudget } from "@/lib/utils";
+import { scheduleSchema } from "@/lib/shared";
+import NumberInput from "@/components/inputs/number";
 
 export const budgetFormSchema = z.object({
 	id: z.string(),
@@ -36,22 +39,11 @@ export const budgetFormSchema = z.object({
 		message: "Name must be at least 2 characters.",
 	}),
 	date: z.date(),
-	amount: z.number(),
+	amount: z.number().nullable(),
 	category: z.string(),
 	tags: z.array(z.string()),
-	recurring: z.boolean(),
+	schedule: scheduleSchema.nullable(),
 	notes: z.string(),
-});
-
-export const getDefaultBudget = (budget: Partial<Budget> | null): Budget => ({
-	id: budget?.id ?? nanoid(),
-	name: budget?.name ?? "",
-	date: budget?.date ? new Date(budget.date) : new Date(),
-	amount: budget?.amount ?? 0,
-	category: budget?.category ?? "",
-	tags: budget?.tags ?? [],
-	recurring: budget?.recurring ?? false,
-	notes: budget?.notes ?? "",
 });
 
 export default function BudgetItemForm({
@@ -76,10 +68,8 @@ export default function BudgetItemForm({
 						<Input
 							form={form}
 							name="name"
-							placeholder="Budget Name"
-							label="Name"
+							placeholder="Untitled Budget"
 							className="w-full text-xl flex-1 font-semibold -translate-x-4"
-							omitLabel={true}
 							subdirectory="budgets"
 						/>
 						<div className="pl-4 lg:pr-8">
@@ -87,10 +77,9 @@ export default function BudgetItemForm({
 						</div>
 					</div>
 					<div>
-						<Input
+						<NumberInput
 							form={form}
 							name="amount"
-							type="number"
 							label="Amount"
 							subdirectory="budgets"
 						/>
