@@ -6,8 +6,6 @@
   - cron job - look through all dates and create new items but need a way to track which one come from the same parent transaction ie scheduleId
     - well not a cron job - just on boot i guess or figure out an event
 
----
-
 - add type - bill | transaction?
 
 - Budgets
@@ -22,7 +20,6 @@
   
   - Nav -> hamburger or icons
   - style all shadcn ui
-  - better name
   - color scheme - dark mode similar to obsidian / lax talk (lighter dark mode)
   - muted text color for nav + footer + placeholders + etc
 
@@ -51,6 +48,7 @@ Table
 - Publish
 
   - logo
+  - better name
   - footer pages -> just text etc - not docs or anything
   - add a contact thing for recs or whatever
   - build

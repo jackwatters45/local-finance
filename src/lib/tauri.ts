@@ -179,3 +179,90 @@ export async function deleteDataFile(
 		console.error(`Error deleting file ${path}: ${error}`);
 	}
 }
+
+//
+//
+//
+// recurring
+import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from "@tauri-apps/api/window";
+
+interface RecurringTransaction {
+	id: string;
+	amount: number;
+	description: string;
+	nextOccurrence: string; // ISO date string
+	frequency: "monthly" | "weekly" | "yearly";
+}
+
+// Function to load recurring transactions from storage
+async function loadRecurringTransactions(): Promise<RecurringTransaction[]> {
+	// Implement loading logic here, e.g., from a file or database
+	return invoke("load_recurring_transactions");
+}
+
+// Function to save recurring transactions to storage
+async function saveRecurringTransactions(
+	transactions: RecurringTransaction[],
+): Promise<void> {
+	// Implement saving logic here
+	await invoke("save_recurring_transactions", { transactions });
+}
+
+// Function to create a new transaction
+async function createTransaction(
+	transaction: RecurringTransaction,
+): Promise<void> {
+	// Implement transaction creation logic here
+	await invoke("create_transaction", { transaction });
+}
+
+// Function to update the next occurrence date
+function updateNextOccurrence(transaction: RecurringTransaction): Date {
+	const currentDate = new Date(transaction.nextOccurrence);
+
+	const nextDate = new Date(currentDate);
+	switch (transaction.frequency) {
+		case "monthly":
+			nextDate.setMonth(currentDate.getMonth() + 1);
+			break;
+		case "weekly":
+			nextDate.setDate(currentDate.getDate() + 7);
+			break;
+		case "yearly":
+			nextDate.setFullYear(currentDate.getFullYear() + 1);
+			break;
+	}
+
+	return nextDate;
+}
+
+// Function to check and process recurring transactions
+async function processRecurringTransactions(): Promise<void> {
+	const transactions = await loadRecurringTransactions();
+	const today = new Date();
+	let updated = false;
+
+	for (const transaction of transactions) {
+		const nextOccurrence = new Date(transaction.nextOccurrence);
+		if (nextOccurrence <= today) {
+			await createTransaction(transaction);
+			transaction.nextOccurrence = updateNextOccurrence(transaction).toISOString();
+			updated = true;
+		}
+	}
+
+	if (updated) {
+		await saveRecurringTransactions(transactions);
+	}
+}
+
+// TODO update comments
+// TODO futre values need to be added like two ahead
+// Set up daily check for recurring transactions
+appWindow.listen("tauri://window-created", async () => {
+	await processRecurringTransactions();
+});
+
+// Initial check on app start
+processRecurringTransactions();
